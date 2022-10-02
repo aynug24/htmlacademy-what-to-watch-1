@@ -1,7 +1,7 @@
 # Личный проект «Что посмотреть»
 
 * Студент: [Сергей Луговых](https://up.htmlacademy.ru/univer-nodejs-urfu/1/user/1783403).
-* Наставник: `Неизвестно`.
+* Наставник: [Глеб Клецков](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
 ---
 
