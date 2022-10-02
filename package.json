@@ -14,7 +14,8 @@
     "lint": "eslint src/ --ext .ts",
     "compile": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "ts": "ts-node"
+    "ts": "ts-node",
+    "cli": "npm run build && ./dist/cli-app.js"
   },
   "devDependencies": {
     "@types/node": "^16.11.26",
