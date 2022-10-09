@@ -1,5 +1,4 @@
 import {Genre} from './genre.type.js';
-import {Uri} from './uri.type.js';
 import {User} from './user.type.js';
 
 
@@ -10,15 +9,15 @@ export type Movie = {
   genre: Genre,
   releaseYear: number,
   rating: number,
-  preview: Uri,
-  video: Uri,
+  previewUri: string,
+  videoUri: string,
   cast: string[],
   director: string,
   runningLengthMin: number,
 
   commentCount?: number,
   postedByUser: User,
-  poster: Uri,
-  backgroundImage: Uri
+  posterUri: string,
+  backgroundImageUri: string
   backgroundColor: string
 }

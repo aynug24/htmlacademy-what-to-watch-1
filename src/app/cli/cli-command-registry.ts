@@ -9,28 +9,30 @@ export default class CliCommandRegistry {
 
   public registerCommands(commands: CliCommand[]): void {
     for (const command of commands) {
-      if (command.FullName !== undefined) {
-        this.fullNamesToCommands[command.FullName] = command;
+      if (command.fullName) {
+        this.fullNamesToCommands[command.fullName] = command;
       }
-      if (command.ShortName !== undefined) {
-        this.shortNamesToCommands[command.ShortName] = command;
+      if (command.shortName) {
+        this.shortNamesToCommands[command.shortName] = command;
       }
     }
   }
 
-  public getCommand(commandName: string | undefined): CliCommand | undefined {
-    if (commandName === undefined) {
+  public getCommand(commandName?: string): CliCommand | undefined {
+    if (!commandName) {
       return this.defaultCommand;
     }
 
     const fullCommandName = commandName.slice(2);
-    if (commandName.startsWith('--') && this.fullNamesToCommands[fullCommandName] !== undefined) {
+    if (commandName.startsWith('--') && this.fullNamesToCommands[fullCommandName]) {
       return this.fullNamesToCommands[fullCommandName];
     }
+
     const shortCommandName = commandName.slice(1);
-    if (commandName.startsWith('-') && this.shortNamesToCommands[shortCommandName] !== undefined) {
+    if (commandName.startsWith('-') && this.shortNamesToCommands[shortCommandName]) {
       return this.shortNamesToCommands[shortCommandName];
     }
+
     return undefined;
   }
 }

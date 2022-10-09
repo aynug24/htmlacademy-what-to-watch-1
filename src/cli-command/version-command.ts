@@ -3,13 +3,10 @@ import {promises as fs} from 'fs';
 import {CommandResult} from './command-result.js';
 
 export default class VersionCommand extends CliCommand {
-  private static FULL_NAME = 'version';
-  private static SHORT_NAME = 'v';
-
-  private static RES_COLOR = '#EFEC2C';
+  private static outputColor = '#EFEC2C';
 
   constructor() {
-    super(VersionCommand.FULL_NAME, VersionCommand.SHORT_NAME);
+    super('version', 'v');
   }
 
   public async execute(): Promise<CommandResult> {
@@ -17,7 +14,7 @@ export default class VersionCommand extends CliCommand {
     const packageJson = JSON.parse(packageJsonContent);
     return {
       result: packageJson.version,
-      colorHex: VersionCommand.RES_COLOR
+      colorHex: VersionCommand.outputColor
     };
   }
 }

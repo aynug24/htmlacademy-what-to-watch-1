@@ -1,16 +1,12 @@
 import {CommandResult} from './command-result.js';
 
 export default abstract class CliCommand {
-  public readonly FullName?: string;
-  public readonly ShortName?: string;
+  public readonly fullName: string;
+  public readonly shortName?: string;
 
-  protected constructor(fullName?: string, shortName?: string) {
-    if (fullName === undefined && shortName === undefined) {
-      throw new Error('At least one of full and short command names should be specified');
-    }
-
-    this.FullName = fullName;
-    this.ShortName = shortName;
+  protected constructor(fullName: string, shortName?: string) {
+    this.fullName = fullName;
+    this.shortName = shortName;
   }
 
   public abstract execute(...parameters: string[]): Promise<CommandResult>;

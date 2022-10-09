@@ -14,7 +14,7 @@ export default class CliApplication {
     const parsedCommandLine = this.parseCommandLine(argv);
     const [commandName] = Object.keys(parsedCommandLine);
     const command = this.commandRegistry.getCommand(commandName);
-    if (command === undefined) {
+    if (!command) {
       throw new Error('Error while parsing command');
     }
     const commandArguments = parsedCommandLine[commandName] ?? [];
@@ -25,13 +25,13 @@ export default class CliApplication {
 
   private parseCommandLine(cliArgs: string[]): ParsedCommandLine {
     const parsedCommandLine: ParsedCommandLine = {};
-    let currentCommand: string | null = null;
+    let currentCommand: string | undefined = undefined;
 
     for (const arg of cliArgs) {
       if (arg.startsWith('-')) {
         currentCommand = arg;
         parsedCommandLine[currentCommand] = [];
-      } else if (currentCommand !== null) {
+      } else if (currentCommand) {
         parsedCommandLine[currentCommand].push(arg);
       } else {
         throw new Error('Options without -parameter are not supported');

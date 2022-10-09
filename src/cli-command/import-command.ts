@@ -5,14 +5,11 @@ import {Movie} from '../types/movie.type.js';
 import {CommandResult} from './command-result.js';
 
 export default class ImportCommand extends CliCommand {
-  private static FULL_NAME = 'import';
-  private static SHORT_NAME = undefined;
-
-  private static RES_COLOR = '#1FAF26';
-  private static ERR_COLOR = '#E51717';
+  private static outputColor = '#1FAF26';
+  private static errorColor = '#E51717';
 
   constructor() {
-    super(ImportCommand.FULL_NAME, ImportCommand.SHORT_NAME);
+    super('import');
   }
 
   public async execute(path: string): Promise<CommandResult> {
@@ -21,12 +18,12 @@ export default class ImportCommand extends CliCommand {
     if (typeof moviesOrErrorMessage === 'string') {
       return {
         result: moviesOrErrorMessage,
-        colorHex: ImportCommand.ERR_COLOR
+        colorHex: ImportCommand.errorColor
       };
     }
     return {
-      result: JSON.stringify(moviesOrErrorMessage),
-      colorHex: ImportCommand.RES_COLOR
+      result: JSON.stringify(moviesOrErrorMessage, null, 2),
+      colorHex: ImportCommand.outputColor
     };
   }
 

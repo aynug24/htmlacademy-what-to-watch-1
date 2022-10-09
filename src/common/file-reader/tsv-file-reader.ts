@@ -1,6 +1,6 @@
 import {ObjectReaderInterface} from './object-reader.interface.js';
 import {readFileSync} from 'fs';
-import ParserInterface from '../parsers/parser.interface.js';
+import { ParserInterface } from '../parsers/parser.interface.js';
 
 export default class TsvFileReader<T> implements ObjectReaderInterface<T> {
   public readonly filename: string;
