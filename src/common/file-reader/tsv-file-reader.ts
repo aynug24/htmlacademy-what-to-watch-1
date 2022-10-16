@@ -1,28 +1,28 @@
-import {ObjectReaderInterface} from './object-reader.interface.js';
-import {readFileSync} from 'fs';
-import { ParserInterface } from '../parsers/parser.interface.js';
+import {ParserInterface} from '../parsers/parser.interface.js';
+import EventEmitter from 'events';
+import FileReader from './file-reader.js';
 
-export default class TsvFileReader<T> implements ObjectReaderInterface<T> {
-  public readonly filename: string;
+export default class TsvFileReader<T> extends EventEmitter {
+  private readonly fileReader: FileReader;
   private readonly parser: ParserInterface<T>;
-  private rawData: string | null = null;
 
-  constructor(filename: string, parser: ParserInterface<T>) {
-    this.filename = filename;
+  private objectCount = 0;
+
+  constructor(parser: ParserInterface<T>, fileReader: FileReader) {
+    super();
+    this.fileReader = fileReader;
     this.parser = parser;
   }
 
-  public read(): void {
-    this.rawData = readFileSync(this.filename, {encoding: 'utf8'});
+  private onLine(line: string) {
+    const parsedObject = this.parser.parse(line.trim());
+    this.emit('read', parsedObject);
+    this.objectCount++;
   }
 
-  public parse(): T[] {
-    if (this.rawData === null) {
-      throw new Error('No data read');
-    }
-    return this.rawData
-      .split('\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => this.parser.parse(line));
+  public async read(): Promise<void> {
+    this.fileReader.on('lineRead', this.onLine.bind(this));
+    await this.fileReader.read();
+    this.emit('endOfFile', this.objectCount);
   }
 }

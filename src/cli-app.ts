@@ -5,10 +5,11 @@ import HelpCommand from './cli-command/help-command.js';
 import ImportCommand from './cli-command/import-command.js';
 import VersionCommand from './cli-command/version-command.js';
 import CliApplication from './app/cli/cli-application.js';
+import GenerateCommand from './cli-command/generate-command.js';
 
 const commandRegistry = new CliCommandRegistry();
 commandRegistry.registerCommands([
-  new HelpCommand(), new ImportCommand(), new VersionCommand()
+  new HelpCommand(), new ImportCommand(), new VersionCommand(), new GenerateCommand()
 ]);
 
 const cliApp = new CliApplication(commandRegistry);

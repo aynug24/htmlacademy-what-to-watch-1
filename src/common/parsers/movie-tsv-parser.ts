@@ -1,8 +1,9 @@
 import {ParserInterface} from './parser.interface.js';
 import {Movie} from '../../types/movie.type.js';
 import {asGenre} from '../../types/genre.type.js';
+import {User} from '../../types/user.type.js';
 
-const MOVIE_FIELD_COUNT = 17;
+const MOVIE_FIELD_COUNT = 18;
 
 export class MovieTsvParser implements ParserInterface<Movie> {
   parse(s: string): Movie {
@@ -25,15 +26,17 @@ export class MovieTsvParser implements ParserInterface<Movie> {
       runningLengthMin,
       postedByUserName,
       postedByUserEmail,
+      postedByUserProfilePictureUri,
       postedByUserPassword,
       posterUri,
       backgroundImageUri,
       backgroundColor
     ] = fields;
 
-    const postedByUser = {
+    const postedByUser: User = {
       name: postedByUserName,
       email: postedByUserEmail,
+      profilePictureUri: postedByUserProfilePictureUri === '' ? undefined : postedByUserProfilePictureUri,
       password: postedByUserPassword
     };
 

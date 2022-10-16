@@ -1,11 +1,14 @@
 import CliCommand from './cli-command.abstract.js';
 import TsvFileReader from '../common/file-reader/tsv-file-reader.js';
 import {MovieTsvParser} from '../common/parsers/movie-tsv-parser.js';
-import {Movie} from '../types/movie.type.js';
 import {CommandResult} from './command-result.js';
+import FileReader from '../common/file-reader/file-reader.js';
+import chalk from 'chalk';
 
 export default class ImportCommand extends CliCommand {
-  private static outputColor = '#1FAF26';
+  private static outputColor = '#345eeb';
+
+  private static resultColor = '#1FAF26';
   private static errorColor = '#E51717';
 
   constructor() {
@@ -13,33 +16,43 @@ export default class ImportCommand extends CliCommand {
   }
 
   public async execute(path: string): Promise<CommandResult> {
-    const moviesOrErrorMessage = this.tryReadMovies(path);
+    const fileReader = new TsvFileReader(new MovieTsvParser(), new FileReader(path));
+    fileReader.on(
+      'read',
+      (movie) => console.log(
+        chalk.hex(ImportCommand.outputColor)(JSON.stringify(movie, null, 2))
+      )
+    );
 
-    if (typeof moviesOrErrorMessage === 'string') {
+    let result = '';
+    fileReader.on(
+      'endOfFile',
+      (movieCount) => { result = `Read ${movieCount} movies`; }
+    );
+
+    let errMsg: string | undefined;
+    try {
+      await fileReader.read();
+    } catch (err) {
+
+      errMsg = (err instanceof Error)
+        ? `Couldn't read file data: ${err.message}`
+        : 'Wtf, someone is throwing numbers!';
+    }
+
+    if (!errMsg && !result) {
+      errMsg = 'Didn\'t reach end of file.';
+    }
+
+    if (errMsg) {
       return {
-        result: moviesOrErrorMessage,
+        result: errMsg,
         colorHex: ImportCommand.errorColor
       };
     }
     return {
-      result: JSON.stringify(moviesOrErrorMessage, null, 2),
-      colorHex: ImportCommand.outputColor
+      result,
+      colorHex: ImportCommand.resultColor
     };
-  }
-
-  private tryReadMovies(path: string): Movie[] | string {
-    const fileReader = new TsvFileReader(path, new MovieTsvParser());
-
-    try {
-      fileReader.read();
-      return fileReader.parse();
-    } catch (err) {
-
-      if (!(err instanceof Error)) {
-        return 'Wtf, someone is throwing numbers!';
-      } else {
-        return `Couldn't read file data: ${err.message}`;
-      }
-    }
   }
 }

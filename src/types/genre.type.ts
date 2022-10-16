@@ -1,4 +1,4 @@
-const genres = [
+export const genres = [
   'comedy',
   'crime',
   'documentary',
@@ -10,11 +10,17 @@ const genres = [
   'thriller'
 ] as const;
 
+const genresStrings: readonly string[] = genres;
+
 export type Genre = typeof genres[number];
 
+function isGenre(s: string): s is Genre {
+  return genresStrings.includes(s);
+}
+
 export function asGenre(s: string): Genre {
-  if (genres.includes(s as never)) {
-    return s as Genre;
+  if (!isGenre(s)) {
+    throw new Error(`No genre ${s}`);
   }
-  throw new Error(`No genre ${s}`);
+  return s;
 }

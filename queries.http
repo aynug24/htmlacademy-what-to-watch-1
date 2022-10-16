@@ -1,0 +1,2 @@
+GET http://localhost:3123/api
+Content-Type: application/json
