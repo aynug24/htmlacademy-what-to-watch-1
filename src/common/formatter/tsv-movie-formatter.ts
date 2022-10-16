@@ -2,7 +2,7 @@ import { FormatterInterface } from './formatter.interface.js';
 import {Movie} from '../../types/movie.type.js';
 
 export default class TsvMovieFormatter implements FormatterInterface<Movie> {
-  format(movie: Movie): string {
+  public format(movie: Movie): string {
 
     const fields = [
       movie.title,
@@ -18,7 +18,7 @@ export default class TsvMovieFormatter implements FormatterInterface<Movie> {
       movie.runningLengthMin.toString(),
       movie.postedByUser.name,
       movie.postedByUser.email,
-      movie.postedByUser.profilePictureUri ?? 'null',
+      movie.postedByUser.profilePictureUri ?? '',
       movie.postedByUser.password,
       movie.posterUri,
       movie.backgroundImageUri,

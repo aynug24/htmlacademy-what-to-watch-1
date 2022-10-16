@@ -36,7 +36,7 @@ export class MovieTsvParser implements ParserInterface<Movie> {
     const postedByUser: User = {
       name: postedByUserName,
       email: postedByUserEmail,
-      profilePictureUri: postedByUserProfilePictureUri === 'null' ? undefined : postedByUserProfilePictureUri,
+      profilePictureUri: postedByUserProfilePictureUri === '' ? undefined : postedByUserProfilePictureUri,
       password: postedByUserPassword
     };
 
