@@ -1,4 +1,4 @@
-import {MovieGeneratorInterface} from './movie-generator.interface.js';
+import {IMovieGenerator} from './movie-generator.interface.js';
 import {MockData} from '../../types/mock-data.type.js';
 import {getRandomElement, getRandomInt} from '../../utils/random/random.js';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../utils/random/random-movie.js';
 import {Genre, genres} from '../../types/genre.type.js';
 import {Movie} from '../../types/movie.type.js';
-import {UserGeneratorInterface} from './user-generator.interface.js';
+import {IUserGenerator} from './user-generator.interface.js';
 
 const MAX_MOVIE_ID = 2 ** 32 - 1;
 const MAX_DESCRIPTION_SENTENCES = 5;
@@ -20,11 +20,11 @@ const EARLIEST_RELEASE_YEAR = 1970;
 const MAX_CAST_LENGTH = 6;
 const MAX_RUNNING_LENGTH_MIN = 300;
 
-export default class MovieGenerator implements MovieGeneratorInterface {
+export default class MovieGenerator implements IMovieGenerator {
   private readonly mockData: MockData;
-  private readonly userGenerator: UserGeneratorInterface;
+  private readonly userGenerator: IUserGenerator;
 
-  constructor(mockData: MockData, userGenerator: UserGeneratorInterface) {
+  constructor(mockData: MockData, userGenerator: IUserGenerator) {
     this.mockData = mockData;
     this.userGenerator = userGenerator;
   }

@@ -1,5 +1,5 @@
 import {User} from '../../types/user.type.js';
 
-export interface UserGeneratorInterface {
+export interface IUserGenerator {
   generate(): User;
 }

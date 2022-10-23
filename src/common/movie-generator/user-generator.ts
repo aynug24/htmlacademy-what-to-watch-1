@@ -1,4 +1,4 @@
-import {UserGeneratorInterface} from './user-generator.interface.js';
+import {IUserGenerator} from './user-generator.interface.js';
 import {MockData} from '../../types/mock-data.type.js';
 import {getRandomEmail, getRandomString, getRandomUsername} from '../../utils/random/random-movie.js';
 import {getRandomInt} from '../../utils/random/random.js';
@@ -9,7 +9,7 @@ const MAX_USER_ID = 2 ** 32 - 1;
 const USER_PASSWORD_LENGTH = 16;
 
 
-export default class UserGenerator implements UserGeneratorInterface {
+export default class UserGenerator implements IUserGenerator {
   private readonly mockData: MockData;
 
   constructor(mockData: MockData) {

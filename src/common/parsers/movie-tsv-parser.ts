@@ -1,11 +1,11 @@
-import {ParserInterface} from './parser.interface.js';
+import {IParser} from './parser.interface.js';
 import {Movie} from '../../types/movie.type.js';
 import {asGenre} from '../../types/genre.type.js';
 import {User} from '../../types/user.type.js';
 
 const MOVIE_FIELD_COUNT = 18;
 
-export class MovieTsvParser implements ParserInterface<Movie> {
+export class MovieTsvParser implements IParser<Movie> {
   parse(s: string): Movie {
     const fields = s.split('\t');
     if (fields.length !== MOVIE_FIELD_COUNT) {
