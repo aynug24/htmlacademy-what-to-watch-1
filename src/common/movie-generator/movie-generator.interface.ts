@@ -1,5 +1,5 @@
 import {Movie} from '../../types/movie.type.js';
 
-export interface MovieGeneratorInterface {
+export interface IMovieGenerator {
   generate(): Movie;
 }

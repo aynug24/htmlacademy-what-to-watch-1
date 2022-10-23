@@ -1,3 +1,3 @@
-export interface FormatterInterface<T> {
+export interface IFormatter<T> {
   format(t: T): string;
 }

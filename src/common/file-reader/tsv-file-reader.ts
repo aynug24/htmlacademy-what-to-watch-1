@@ -1,14 +1,14 @@
-import {ParserInterface} from '../parsers/parser.interface.js';
+import {IParser} from '../parsers/parser.interface.js';
 import EventEmitter from 'events';
 import FileReader from './file-reader.js';
 
 export default class TsvFileReader<T> extends EventEmitter {
   private readonly fileReader: FileReader;
-  private readonly parser: ParserInterface<T>;
+  private readonly parser: IParser<T>;
 
   private objectCount = 0;
 
-  constructor(parser: ParserInterface<T>, fileReader: FileReader) {
+  constructor(parser: IParser<T>, fileReader: FileReader) {
     super();
     this.fileReader = fileReader;
     this.parser = parser;

@@ -1,7 +1,7 @@
-import {FileWriterInterface} from './file-writer.interface.js';
+import {IFileWriter} from './file-writer.interface.js';
 import {createWriteStream, WriteStream} from 'fs';
 
-export default class PerLineFileWriter implements FileWriterInterface {
+export default class PerLineFileWriter implements IFileWriter {
   public readonly filename: string;
 
   private stream: WriteStream;

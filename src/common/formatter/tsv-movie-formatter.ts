@@ -1,7 +1,7 @@
-import { FormatterInterface } from './formatter.interface.js';
+import { IFormatter } from './formatter.interface.js';
 import {Movie} from '../../types/movie.type.js';
 
-export default class TsvMovieFormatter implements FormatterInterface<Movie> {
+export default class TsvMovieFormatter implements IFormatter<Movie> {
   public format(movie: Movie): string {
 
     const fields = [
