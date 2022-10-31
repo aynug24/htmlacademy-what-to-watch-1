@@ -1,13 +1,17 @@
 import chalk from 'chalk';
 import CliCommandRegistry from './cli-command-registry.js';
+import {ILogger} from '../../common/logger/logger.interface.js';
+import ConsoleLoggerService from '../../common/logger/console-logger.service.js';
 
 type ParsedCommandLine = Record<string, string[]>;
 
 export default class CliApplication {
   private commandRegistry: CliCommandRegistry;
+  private logger: ILogger;
 
   constructor(commandRegistry: CliCommandRegistry) {
     this.commandRegistry = commandRegistry;
+    this.logger = new ConsoleLoggerService();
   }
 
   public async processCommandLine(argv: string[]): Promise<void> {
@@ -20,7 +24,7 @@ export default class CliApplication {
     const commandArguments = parsedCommandLine[commandName] ?? [];
     const commandResult = await command.execute(...commandArguments);
 
-    console.log(chalk.hex(commandResult.colorHex)(commandResult.result));
+    this.logger.info(chalk.hex(commandResult.colorHex)(commandResult.result));
   }
 
   private parseCommandLine(cliArgs: string[]): ParsedCommandLine {

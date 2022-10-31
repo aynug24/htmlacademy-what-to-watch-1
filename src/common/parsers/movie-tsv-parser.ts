@@ -3,7 +3,7 @@ import {Movie} from '../../types/movie.type.js';
 import {asGenre} from '../../types/genre.type.js';
 import {User} from '../../types/user.type.js';
 
-const MOVIE_FIELD_COUNT = 18;
+const MOVIE_FIELD_COUNT = 17;
 
 export class MovieTsvParser implements IParser<Movie> {
   parse(s: string): Movie {
@@ -27,7 +27,6 @@ export class MovieTsvParser implements IParser<Movie> {
       postedByUserName,
       postedByUserEmail,
       postedByUserProfilePictureUri,
-      postedByUserPassword,
       posterUri,
       backgroundImageUri,
       backgroundColor
@@ -37,7 +36,6 @@ export class MovieTsvParser implements IParser<Movie> {
       name: postedByUserName,
       email: postedByUserEmail,
       profilePictureUri: postedByUserProfilePictureUri === '' ? undefined : postedByUserProfilePictureUri,
-      password: postedByUserPassword
     };
 
     return {

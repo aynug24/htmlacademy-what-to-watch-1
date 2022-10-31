@@ -19,7 +19,6 @@ export default class TsvMovieFormatter implements IFormatter<Movie> {
       movie.postedByUser.name,
       movie.postedByUser.email,
       movie.postedByUser.profilePictureUri ?? '',
-      movie.postedByUser.password,
       movie.posterUri,
       movie.backgroundImageUri,
       movie.backgroundColor

@@ -1,6 +1,7 @@
 import {IParser} from '../parsers/parser.interface.js';
 import EventEmitter from 'events';
 import FileReader from './file-reader.js';
+import {EmptyVoidFn} from '@typegoose/typegoose/lib/types.js';
 
 export default class TsvFileReader<T> extends EventEmitter {
   private readonly fileReader: FileReader;
@@ -14,10 +15,13 @@ export default class TsvFileReader<T> extends EventEmitter {
     this.parser = parser;
   }
 
-  private onLine(line: string) {
+  private async onLine(line: string, resolve: EmptyVoidFn) {
     const parsedObject = this.parser.parse(line.trim());
-    this.emit('read', parsedObject);
+    await new Promise((resolveInner) => {
+      this.emit('read', parsedObject, resolveInner);
+    });
     this.objectCount++;
+    resolve();
   }
 
   public async read(): Promise<void> {
