@@ -6,11 +6,25 @@ import LoggerService from './common/logger/logger.service.js';
 import ConfigService from './common/config/config.service.js';
 import {IConfig} from './common/config/config.interface.js';
 import {ILogger} from './common/logger/logger.interface.js';
+import {UserEntity, UserModel} from './modules/user/user.entity.js';
+import {types} from '@typegoose/typegoose';
+import DatabaseService from './common/database-client/database.service.js';
+import {IUserService} from './modules/user/user-service.interface.js';
+import {IDatabase} from './common/database-client/database.interface.js';
+import UserService from './modules/user/user.service.js';
+import {IMovieService} from './modules/movie/movie-service.interface.js';
+import MovieService from './modules/movie/movie.service.js';
+import {MovieEntity, MovieModel} from './modules/movie/movie.entity.js';
 
 const appContainer = new Container();
 appContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
 appContainer.bind<ILogger>(Component.ILogger).to(LoggerService).inSingletonScope();
 appContainer.bind<IConfig>(Component.IConfig).to(ConfigService).inSingletonScope();
+appContainer.bind<IDatabase>(Component.IDatabase).to(DatabaseService).inSingletonScope();
+appContainer.bind<IUserService>(Component.IUserService).to(UserService);
+appContainer.bind<types.ModelType<UserEntity>>(Component.UserModel).toConstantValue(UserModel);
+appContainer.bind<IMovieService>(Component.IMovieService).to(MovieService);
+appContainer.bind<types.ModelType<MovieEntity>>(Component.MovieModel).toConstantValue(MovieModel);
 
 const app = appContainer.get<Application>(Component.Application);
 await app.init();

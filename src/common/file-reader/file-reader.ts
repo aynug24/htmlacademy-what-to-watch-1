@@ -27,7 +27,9 @@ export default class FileReader extends EventEmitter {
         fileBuf = fileBuf.slice(lineFeedPos + 1);
         rowCount++;
 
-        this.emit('lineRead', line);
+        await new Promise((resolve) => {
+          this.emit('lineRead', line, resolve);
+        });
       }
     }
 

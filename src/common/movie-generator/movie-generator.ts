@@ -12,6 +12,7 @@ import {Movie} from '../../types/movie.type.js';
 import {IUserGenerator} from './user-generator.interface.js';
 
 const MAX_MOVIE_ID = 2 ** 32 - 1;
+const MIN_DESCRIPTION_SENTENCES = 3;
 const MAX_DESCRIPTION_SENTENCES = 5;
 
 const EARLIEST_POST_DATE = new Date(2018, 3, 24);
@@ -35,7 +36,9 @@ export default class MovieGenerator implements IMovieGenerator {
 
     return {
       title: getRandomTitle(this.mockData.nouns),
-      description: getRandomText(this.mockData.nouns, this.mockData.pastTenseVerbs, MAX_DESCRIPTION_SENTENCES),
+      description: getRandomText(
+        this.mockData.nouns, this.mockData.pastTenseVerbs,
+        MIN_DESCRIPTION_SENTENCES, MAX_DESCRIPTION_SENTENCES),
       postDate: getRandomDate(EARLIEST_POST_DATE, new Date()),
       genre: getRandomElement<Genre>(genres),
       releaseYear: getRandomInt(EARLIEST_RELEASE_YEAR, new Date().getFullYear()),

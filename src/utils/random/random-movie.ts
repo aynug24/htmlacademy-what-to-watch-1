@@ -19,8 +19,8 @@ export function getRandomSentence(nouns: string[], pastVerbs: string[]) {
   return `${capitalize(subject)} ${verb} ${object}.`;
 }
 
-export function getRandomText(nouns: string[], pastVerbs: string[], maxSentenceCount = 3) {
-  const sentenceCount = getRandomInt(1, maxSentenceCount);
+export function getRandomText(nouns: string[], pastVerbs: string[], minSentenceCount = 3, maxSentenceCount = 3) {
+  const sentenceCount = getRandomInt(minSentenceCount, maxSentenceCount);
 
   return [...Array(sentenceCount).keys()]
     .map(() => getRandomSentence(nouns, pastVerbs))
