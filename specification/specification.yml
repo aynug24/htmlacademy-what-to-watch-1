@@ -1,0 +1,738 @@
+openapi: 3.0.3
+info:
+  title: API сервер для личного проекта «Что посмотреть».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Что посмотреть».
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+tags:
+  - name: movies
+    description: Фильмы
+  - name: movies-to-watch
+    description: Запланированные к просмотру фильмы
+  - name: comments
+    description: Комментарии к фильмам
+  - name: users
+    description: Пользователь
+
+paths:
+  /movies:
+    get:
+      tags:
+        - movies
+      summary: Получение списка фильмов
+      description:  Сервис предоставляет ресурс для получения списка фильмов. По умолчанию сервис возвращает не больше 60 фильмов. Клиент может запросить больше фильмов за раз, указав нужное количество в параметре запроса. Сервис всегда возвращает список фильмов, отсортированный по дате публикации (по убыванию).
+      parameters:
+        - name: genre
+          in: query
+          description: Жанр для фильтрации
+          schema:
+            $ref: '#/components/schemas/genre'
+        - name: limit
+          in: query
+          description: Количество фильмов
+          schema:
+            type: integer
+            default: 60
+            example: 30
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/movieSummary'
+        "400":
+          description: Ошибка в параметрах запроса
+    post:
+      tags:
+        - movies
+      summary: Добавление нового фильма
+      description: Добавлять новые фильмы могут только авторизованные клиенты. Перед добавлением фильма данные, полученные от клиента, валидируются. Если валидация не пройдена, сервис возвращает ошибку и корректный код состояния. Фильм при этом не создаётся. В случае успешного добавления нового фильма сервис в ответе возвращает информацию о созданном фильме (объект фильма).
+      requestBody:
+        description: Информация для создания нового фильма
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createMovie'
+      responses:
+        "201":
+          description: Фильм успешно создан. Объект фильма
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+        "400":
+          description: Неправильный формат данных
+        "401":
+          description: Пользователь неавторизован
+  /movies/{movieId}:
+    parameters:
+    - name: movieId
+      in: path
+      description: Id фильма
+      required: true
+      schema:
+        type: string
+      example: e5293rifh2
+    
+    get:
+      tags:
+        - movies
+      summary: Получение детальной информации по фильму
+      description: Сервис предоставляет ресурс для получения детальной информации по одному фильму. Детальная информация по фильму включает сведения о количестве комментариев, но сами комментарии не включены.
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+        "404":
+          description: Фильм не найден
+    patch:
+      tags:
+        - movies
+      summary: Редактирование карточки фильма
+      description: Клиент может редактировать карточки фильмов, которые создал он.  Полученные от клиента данные проходят валидацию. Если валидация не пройдена сервис возвращает информацию об ошибке и корректный код состояния.
+      requestBody:
+        description: Полный набор информации по фильму
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/editMovie'
+      responses:
+        "200":
+          description: Фильм успешно отредактирован. Объект фильма
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+        "400":
+          description: Неправильный формат данных
+        "401":
+          description: Пользователь неавторизован
+        "403":
+          description: У пользователя нет прав на редактирование этого фильма
+        "404":
+          description: Фильм не найден
+        "418":
+          description: А я чайник
+    
+    delete:
+      tags:
+        - movies
+      summary: Удаление карточки фильма
+      description: Сервис предоставляет ресурс для удаления фильмов. Клиент может удалять только «свои» фильмы. При удалении фильма комментарии к нему удаляются автоматически.
+      responses:
+        "204":
+          description: Фильм успешно удалён
+        "401":
+          description: Пользователь неавторизован
+        "403":
+          description: У пользователя нет прав на редактирование этого фильма
+        "404":
+          description: Фильм не найден
+        "418":
+          description: А я чайник
+
+  /movies/{movieId}/promo:
+    parameters:
+    - name: movieId
+      in: path
+      description: Id фильма
+      required: true
+      schema:
+        type: string
+      example: e5293rifh2
+    
+    get:
+      tags:
+        - movies
+      summary: Получение промо-фильма
+      description: Сервис предоставляет ресурс для получения информации о промо-фильме.
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+        "404":
+          description: Фильм не найден
+  
+  /movies-to-watch:
+    get:
+      tags:
+        - movies-to-watch
+      summary: Получить список фильмов «К просмотру»
+      description: Сервис возвращает все фильмы, добавленные к просмотру.
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/movieSummary'
+        "401":
+          description: Пользователь не авторизован
+    post:
+      tags:
+        - movies-to-watch
+      summary: Добавить фильм в список «К просмотру»
+      description: Сервис предоставляет ресурс для добавления и удаления любого фильма в/из списка к просмотру.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Id добавляемого фильма
+      responses:
+        "201":
+          description: Фильм добавлен
+        "400":
+          description: Не получен Id фильма
+        "401":
+          description: Пользователь не авторизован
+        "404":
+          description: Фильм не найден
+        "418":
+          description: А я чайник
+    delete:
+      tags:
+        - movies-to-watch
+      summary: Удалить фильм из списка «К просмотру»
+      description: Сервис предоставляет ресурс для добавления и удаления любого фильма в/из списка к просмотру.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Id удаляемого фильма
+      responses:
+        "204":
+          description: Фильм удалён из списка «К просмотру»
+        "400":
+          description: Не получен Id фильма
+        "401":
+          description: Пользователь не авторизован
+        "418":
+          description: А я чайник
+  /movies/{movieId}/comments:
+    parameters:
+    - name: movieId
+      in: path
+      description: Id фильма
+      required: true
+      schema:
+        type: string
+      example: e5293rifh2
+    get:
+      tags:
+        - comments
+      summary: Получить список комментариев для определённого фильма
+      description: Сервис предоставляет ресурс для получения списка комментариев для определённого фильма. Комментарии отсортированы по дате публикации (по убыванию). Сначала новые, потом старые.
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        "404":
+          description: Фильм не найден
+    post:
+      tags:
+        - comments
+      summary: Добавить новый комментарий к определённому фильму
+      description: Перед добавлением комментария сервис валидирует данные. В случае ошибки валидации сервис возвращает ошибку и корректный код состояния. Удаление и редактирование комментариев не предусмотрено.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/comment'
+      responses:
+        "201":
+          description: Комментарий отправлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+        "400":
+          description: Неверный запрос
+        "401":
+          description: Пользователь не авторизован
+        "404":
+          description: Фильм не найден
+  
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя.
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Неверный запрос
+        "403":
+          description: Только неавторизованные пользователи могут регистрироваться
+        "409":
+          description: Пользователь с таким email уже существует.
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginUser'
+      responses:
+        "200":
+          description: Успешный вход
+          headers: 
+            Set-Cookie:
+              schema:
+                type: string
+                example: JSESSIONID=abcde12345; Path=/; HttpOnly
+        "400":
+          description: Неверный запрос
+        "401":
+          description: Неверный логин или пароль
+
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизованному пользователю
+      responses:
+        "200":
+          description: Пользователь авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Пользователь не авторизован
+  
+  /users/logout:
+    post:
+      tags:
+        - users
+      summary: Выход из закрытой части приложения
+      description: Если токен прошёл проверку, сервис завершает пользовательский сеанс (сессию). В противном случае возвращает ошибку и соответствующий код состояния.
+      responses:
+        "200":
+          description: Пользователь вышел из аккаунта
+        "404":
+          description: Пользователь не был авторизован
+
+components:
+  schemas:
+    genre:
+      type: string
+      enum: [comedy, crime, documentary, drama, horror, family, romance, scifi, thriller]
+      description: Жанр фильма
+      example: drama
+    
+    editMovie:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Название фильма
+          example: Drive
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          description: Описание фильма
+          example: Umer v kontse k bolshomu nashemu sozhaleniyu
+        genre: 
+          $ref: '#/components/schemas/genre'
+        releaseYear:
+          type: integer
+          description: Год выхода
+          example: 2021
+        previewUri:
+          type: string
+          description: Ссылка на превью видео
+          example: movie/preview.mp4
+        videoUri:
+          type: string
+          description: Ссылка на видео
+          example: movie/movie.mp4
+        cast:
+          type: array
+          items:
+            type: string
+          description: Список актёров, участвующих в фильме
+          example: [Ryan Gosling, Carey Mulligan, Bryan Cranston]
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          description: Режиссёр
+          example: Nicolas Winding Refn
+        runningLengthMin:
+          type: integer
+          description: Продолжительность фильма (в минутах)
+          example: 100
+        posterUri:
+          type: string
+          description: Ссылка на постер для фильма в формате .jpg
+          example: movie/poster.jpg
+        backgroundImageUri:
+          type: string
+          description: Ссылка на изображение для фона в формате .jpg
+          example: movie/background.jpg
+        backgroundColor:
+          type: string
+          description: Цвет фона
+          example: \#ffffff
+
+    createMovie:
+      type: object
+      required:
+        - title
+        - description
+        - postDate
+        - genre
+        - releaseYear
+        - previewUri
+        - videoUri
+        - cast
+        - director
+        - runningLengthMin
+        - postedByUserId
+        - posterUri
+        - backgroundImageUri
+        - backgroundColor
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Название фильма
+          example: Drive
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          description: Описание фильма
+          example: Umer v kontse k bolshomu nashemu sozhaleniyu
+        genre: 
+          $ref: '#/components/schemas/genre'
+        releaseYear:
+          type: integer
+          description: Год выхода
+          example: 2021
+        previewUri:
+          type: string
+          description: Ссылка на превью видео
+          example: movie/preview.mp4
+        videoUri:
+          type: string
+          description: Ссылка на видео
+          example: movie/movie.mp4
+        cast:
+          type: array
+          items:
+            type: string
+          description: Список актёров, участвующих в фильме
+          example: [Ryan Gosling, Carey Mulligan, Bryan Cranston]
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          description: Режиссёр
+          example: Nicolas Winding Refn
+        runningLengthMin:
+          type: integer
+          description: Продолжительность фильма (в минутах)
+          example: 100
+        posterUri:
+          type: string
+          description: Ссылка на постер для фильма в формате .jpg
+          example: movie/poster.jpg
+        backgroundImageUri:
+          type: string
+          description: Ссылка на изображение для фона в формате .jpg
+          example: movie/background.jpg
+        backgroundColor:
+          type: string
+          description: Цвет фона
+          example: \#ffffff
+        postDate:
+          type: string
+          format: date
+          description: Дата публикации фильма
+          example: 2017-07-21
+        postedByUserId:
+          type: string
+          description: Ссылка на сущность «Пользователь»
+          example: 43gonwt0wenfiwnt
+    
+    movie:
+      type: object
+      required:
+        - title
+        - description
+        - postDate
+        - genre
+        - releaseYear
+        - previewUri
+        - videoUri
+        - cast
+        - director
+        - runningLengthMin
+        - postedByUserId
+        - posterUri
+        - backgroundImageUri
+        - backgroundColor
+        - _id
+        - rating
+        - commentCount
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Название фильма
+          example: Drive
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          description: Описание фильма
+          example: Umer v kontse k bolshomu nashemu sozhaleniyu
+        genre: 
+          $ref: '#/components/schemas/genre'
+        releaseYear:
+          type: integer
+          description: Год выхода
+          example: 2021
+        previewUri:
+          type: string
+          description: Ссылка на превью видео
+          example: movie/preview.mp4
+        videoUri:
+          type: string
+          description: Ссылка на видео
+          example: movie/movie.mp4
+        cast:
+          type: array
+          items:
+            type: string
+          description: Список актёров, участвующих в фильме
+          example: [Ryan Gosling, Carey Mulligan, Bryan Cranston]
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          description: Режиссёр
+          example: Nicolas Winding Refn
+        runningLengthMin:
+          type: integer
+          description: Продолжительность фильма (в минутах)
+          example: 100
+        posterUri:
+          type: string
+          description: Ссылка на постер для фильма в формате .jpg
+          example: movie/poster.jpg
+        backgroundImageUri:
+          type: string
+          description: Ссылка на изображение для фона в формате .jpg
+          example: movie/background.jpg
+        backgroundColor:
+          type: string
+          description: Цвет фона
+          example: '#ffffff'
+        postDate:
+          type: string
+          format: date
+          description: Дата публикации фильма
+          example: 2017-07-21
+        postedByUserId:
+          type: string
+          description: Ссылка на сущность «Пользователь»
+          example: 43gonwt0wenfiwnt
+        _id:
+          type: string
+          description: Id фильма
+          example: e293fj2303trifihw
+        rating:
+          type: number
+          description: Рейтинг
+          example: 4.9
+        commentCount:
+          type: integer
+          description: Количество комментариев
+          example: 5
+
+    movieSummary:
+      type: object
+      required:
+        - title
+        - postDate
+        - genre
+        - previewUri
+        - postedByUserId
+        - posterUri
+        - commentCount
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Название фильма
+          example: Drive
+        genre: 
+          $ref: '#/components/schemas/genre'
+        previewUri:
+          type: string
+          description: Ссылка на превью видео
+          example: movie/preview.mp4
+        posterUri:
+          type: string
+          description: Ссылка на постер для фильма в формате .jpg
+          example: movie/poster.jpg
+        postDate:
+          type: string
+          format: date
+          description: Дата публикации фильма
+          example: 2017-07-21
+        postedByUserId:
+          type: string
+          description: Ссылка на сущность «Пользователь»
+          example: 43gonwt0wenfiwnt
+        commentCount:
+          type: integer
+          description: Количество комментариев
+          example: 5
+
+    comment:
+      type: object
+      required:
+        - text
+        - rating
+        - date
+        - userId
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+          description: Текст комментария
+          example: Нормальный фильм!
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Рейтинг
+          example: 7
+        date:
+          type: string
+          format: date-time
+          description: Дата публикации комментария
+          example: 2017-07-21T17:32:28Z
+        userId:
+          type: string
+          description: Автор комментария, ссылка на сущность «Пользователь»
+          example: 39twfneogw
+      
+    createUser:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 15
+          description: Имя
+        email:
+          type: string
+          format: email
+          description: Электронная почта
+        profilePictureUri:
+          type: string
+          description: Аватар пользователя. Изображение пользователя в формате .jpg или .png
+        password:
+          type: string
+          format: password
+          minLength: 6
+          maxLength: 12
+          description: Пароль
+
+    loginUser:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Электронная почт
+        password:
+          type: string
+          format: password
+          minLength: 6
+          maxLength: 12
+          description: Пароль
+
+    user:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 15
+          description: Имя
+        email:
+          type: string
+          format: email
+          description: Электронная почт
+        profilePictureUri:
+          type: string
+          description: Аватар пользователя. Изображение пользователя в формате .jpg или .png
+  
+
