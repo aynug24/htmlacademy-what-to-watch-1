@@ -24,6 +24,13 @@ import PromoMovieService from './modules/promo-movie/promo-movie.service.js';
 import CommentService from './modules/comment/comment.service.js';
 import {ICommentService} from './modules/comment/comment-service.interface.js';
 import {IMoviesToWatchService} from './modules/movies-to-watch/movies-to-watch.interface.js';
+import ExceptionFilter from './common/errors/exception-filter.js';
+import {IExceptionFilter} from './common/errors/exception-filter.interface.js';
+import {IController} from './common/controller/controller.interface.js';
+import MovieController from './modules/movie/movie.controller.js';
+import MoviesToWatchController from './modules/movies-to-watch/movies-to-watch-controller.js';
+import PromoMovieController from './modules/promo-movie/promo-movie.controller.js';
+import UserController from './modules/user/user.controller.js';
 
 const appContainer = new Container();
 appContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
@@ -35,11 +42,17 @@ appContainer.bind<types.ModelType<MovieEntity>>(Component.MovieModel).toConstant
 appContainer.bind<types.ModelType<PromoMovieEntity>>(Component.PromoMovieModel).toConstantValue(PromoMoveModel);
 appContainer.bind<types.ModelType<CommentEntity>>(Component.CommentModel).toConstantValue(CommentModel);
 appContainer.bind<types.ModelType<MoviesToWatchEntity>>(Component.MoviesToWatchModel).toConstantValue(MoviesToWatchModel);
-appContainer.bind<IUserService>(Component.IUserService).to(UserService);
-appContainer.bind<IMovieService>(Component.IMovieService).to(MovieService);
-appContainer.bind<IPromoMovieService>(Component.IPromoMovieService).to(PromoMovieService);
-appContainer.bind<ICommentService>(Component.ICommentService).to(CommentService);
-appContainer.bind<IMoviesToWatchService>(Component.ICommentService).to(MoviesToWatchService);
+appContainer.bind<IUserService>(Component.IUserService).to(UserService).inSingletonScope();
+appContainer.bind<IMovieService>(Component.IMovieService).to(MovieService).inSingletonScope();
+appContainer.bind<IPromoMovieService>(Component.IPromoMovieService).to(PromoMovieService).inSingletonScope();
+appContainer.bind<ICommentService>(Component.ICommentService).to(CommentService).inSingletonScope();
+appContainer.bind<IMoviesToWatchService>(Component.ICommentService).to(MoviesToWatchService).inSingletonScope();
+
+appContainer.bind<IExceptionFilter>(Component.IExceptionFilter).to(ExceptionFilter).inSingletonScope();
+appContainer.bind<IController>(Component.MovieController).to(MovieController).inSingletonScope();
+appContainer.bind<IController>(Component.MoviesToWatchController).to(MoviesToWatchController).inSingletonScope();
+appContainer.bind<IController>(Component.PromoMovieController).to(PromoMovieController).inSingletonScope();
+appContainer.bind<IController>(Component.UserController).to(UserController).inSingletonScope();
 
 const app = appContainer.get<Application>(Component.Application);
 await app.init();
