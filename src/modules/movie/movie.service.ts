@@ -9,12 +9,14 @@ import UpdateMovieDto from './dto/update-movie.dto.js';
 import {DEFAULT_MOVIE_COUNT} from './movie.constant.js';
 import {SortType} from '../../types/sort-type.enum.js';
 import {Genre} from '../../types/genre.type.js';
+import {ICommentService} from '../comment/comment-service.interface.js';
 
 @injectable()
 export default class MovieService implements IMovieService {
   constructor(
     @inject(Component.ILogger) private readonly logger: ILogger,
-    @inject(Component.MovieModel) private readonly MovieModel: types.ModelType<MovieEntity>
+    @inject(Component.MovieModel) private readonly MovieModel: types.ModelType<MovieEntity>,
+    @inject(Component.ICommentService) private readonly commentService: ICommentService
   ) {
   }
 
@@ -37,6 +39,9 @@ export default class MovieService implements IMovieService {
   }
 
   public async deleteById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
+
+    await this.commentService.deleteByMovieId(movieId); // todo удалять из moviesToWatch?
+
     return this.MovieModel
       .findByIdAndDelete(movieId)
       .exec();
