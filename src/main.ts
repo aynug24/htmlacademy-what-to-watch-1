@@ -31,6 +31,7 @@ import MovieController from './modules/movie/movie.controller.js';
 import MoviesToWatchController from './modules/movies-to-watch/movies-to-watch-controller.js';
 import PromoMovieController from './modules/promo-movie/promo-movie.controller.js';
 import UserController from './modules/user/user.controller.js';
+import CommentController from './modules/comment/comment.controller.js';
 
 const appContainer = new Container();
 appContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
@@ -53,6 +54,7 @@ appContainer.bind<IController>(Component.MovieController).to(MovieController).in
 appContainer.bind<IController>(Component.MoviesToWatchController).to(MoviesToWatchController).inSingletonScope();
 appContainer.bind<IController>(Component.PromoMovieController).to(PromoMovieController).inSingletonScope();
 appContainer.bind<IController>(Component.UserController).to(UserController).inSingletonScope();
+appContainer.bind<IController>(Component.CommentController).to(CommentController).inSingletonScope();
 
 const app = appContainer.get<Application>(Component.Application);
 await app.init();

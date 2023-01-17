@@ -1,6 +1,7 @@
 import typegoose, {defaultClasses, Ref, getModelForClass} from '@typegoose/typegoose';
 import {UserEntity} from '../user/user.entity.js';
 import {Genre} from '../../types/genre.type.js';
+import {Types} from 'mongoose';
 
 const {prop, modelOptions} = typegoose;
 
@@ -13,6 +14,9 @@ export interface MovieEntity extends defaultClasses.Base {
   }
 })
 export class MovieEntity extends defaultClasses.TimeStamps {
+  @prop({trim: true})
+  public id!: string;
+
   @prop({required: true, minlength: 2, maxlength: 100})
   public title!: string;
 
@@ -46,7 +50,10 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public runningLengthMin!: number;
 
-  @prop({required: true, ref: UserEntity})
+  @prop({default: 0})
+  public commentsCount!: number;
+
+  @prop({required: true, ref: UserEntity, type: Types.ObjectId})
   public postedByUser: Ref<UserEntity>;
 
   @prop({required: true})
