@@ -24,4 +24,4 @@ export const getRequestArgument = ({params, query, body}: Request, requestArgume
   } else {
     throw new Error('Unknown request param type');
   }
-}
+};
