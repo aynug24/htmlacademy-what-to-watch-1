@@ -20,7 +20,8 @@ export default class Application {
     @inject(Component.MovieController) private movieController: IController,
     @inject(Component.MoviesToWatchModel) private moviesToWatchController: IController,
     @inject(Component.PromoMovieController) private promoMovieController: IController,
-    @inject(Component.UserController) private userController: IController
+    @inject(Component.UserController) private userController: IController,
+    @inject(Component.CommentController) private commentController: IController,
   ) {
     this.expressApp = express();
   }
@@ -30,10 +31,12 @@ export default class Application {
     this.expressApp.use('/movies-to-watch', this.moviesToWatchController.router);
     this.expressApp.use('/promo-movie', this.promoMovieController.router);
     this.expressApp.use('/users', this.userController.router);
+    this.expressApp.use('/comments', this.commentController.router);
   }
 
   public initMiddleware() {
     this.expressApp.use(express.json());
+    this.expressApp.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
   }
 
   public initExceptionFilters() {

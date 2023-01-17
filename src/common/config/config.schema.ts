@@ -12,6 +12,7 @@ export type ConfigSchema = {
   DB_PORT: number;
   DB_NAME: string;
   DEFAULT_USER_PASSWORD: string;
+  UPLOAD_DIRECTORY: string;
 }
 
 export const configSchema = convict<ConfigSchema>({
@@ -62,5 +63,11 @@ export const configSchema = convict<ConfigSchema>({
     format: String,
     env: 'DEFAULT_USER_PASSWORD',
     default: '123456'
+  },
+  UPLOAD_DIRECTORY: {
+    doc: 'Directory for upload files',
+    format: String,
+    env: 'UPLOAD_DIRECTORY',
+    default: null
   }
 });
