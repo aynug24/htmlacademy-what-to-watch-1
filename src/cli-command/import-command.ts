@@ -7,7 +7,7 @@ import {IDatabase} from '../common/database-client/database.interface.js';
 import {IUserService} from '../modules/user/user-service.interface.js';
 import {IMovieService} from '../modules/movie/movie-service.interface.js';
 import {Movie} from '../types/movie.type.js';
-import {getURI} from '../utils/db.js';
+import {getDbUri} from '../utils/db.js';
 import {EmptyVoidFn} from '@typegoose/typegoose/lib/types.js';
 import {IConfig} from '../common/config/config.interface.js';
 import {initContainer} from '../container.js';
@@ -37,7 +37,7 @@ export default class ImportCommand extends CliCommand {
   public async execute(
     path: string, login: string, password: string, host: string, dbname: string, salt: string
   ): Promise<CommandResult> {
-    const dbUri = getURI(login, password, host, this.configService.get('DB_PORT'), dbname);
+    const dbUri = getDbUri(login, password, host, this.configService.get('DB_PORT'), dbname);
     this.salt = salt;
 
     await this.databaseService.connect(dbUri);

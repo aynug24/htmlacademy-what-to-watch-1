@@ -21,6 +21,9 @@ import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.j
 import {RequestArgumentType} from '../../types/request-argument-type.type.js';
 import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
 import {IUserService} from '../user/user-service.interface.js';
+import {IConfig} from '../../common/config/config.interface.js';
+import {DEFAULT_MOVIE_BACKGROUND_IMAGES, DEFAULT_MOVIE_POSTER_IMAGES} from './movie.constant.js';
+import {getRandomElement} from '../../utils/random/random.js';
 
 type AnyRecord = Record<string, unknown>;
 type StringRecord = Record<string, string>;
@@ -29,10 +32,11 @@ type StringRecord = Record<string, string>;
 export default class MovieController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) configService: IConfig,
     @inject(Component.IMovieService) private readonly movieService: IMovieService,
     @inject(Component.IUserService) private readonly userService: IUserService,
   ) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for MovieController…');
 
@@ -90,7 +94,14 @@ export default class MovieController extends Controller {
     {body, user}: Request<AnyRecord, AnyRecord, CreateMovieDto>,
     res: Response): Promise<void> {
 
-    const result = await this.movieService.create(body, user.id);
+    const posterUri = getRandomElement(DEFAULT_MOVIE_POSTER_IMAGES);
+    const backgroundImageUri = getRandomElement(DEFAULT_MOVIE_BACKGROUND_IMAGES);
+    const result = await this.movieService.create({
+      ...body,
+      posterUri,
+      backgroundImageUri
+    }, user.id);
+
     const movie = await this.movieService.findById(result.id);
     this.created(res, fillDTO(MovieResponse, movie));
   }

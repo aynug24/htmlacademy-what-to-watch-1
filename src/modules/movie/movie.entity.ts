@@ -1,6 +1,6 @@
 import typegoose, {defaultClasses, Ref, getModelForClass} from '@typegoose/typegoose';
 import {UserEntity} from '../user/user.entity.js';
-import {Genre} from '../../types/genre.type.js';
+import {Genre, genres} from '../../types/genre.type.js';
 import {Types} from 'mongoose';
 
 const {prop, modelOptions} = typegoose;
@@ -14,37 +14,38 @@ export interface MovieEntity extends defaultClasses.Base {
   }
 })
 export class MovieEntity extends defaultClasses.TimeStamps {
-  @prop({trim: true})
-  public id!: string;
-
-  @prop({required: true, minlength: 2, maxlength: 100})
+  @prop({trim: true, required: true, minlength: 2, maxlength: 100})
   public title!: string;
 
-  @prop({required: true, minlength: 20, maxlength: 1024})
+  @prop({trim: true, required: true, minlength: 20, maxlength: 1024})
   public description!: string;
 
   @prop({required: true})
   public postDate!: Date;
 
-  @prop({required: true})
+  @prop({
+    type: () => String,
+    required: true,
+    enum: genres
+  })
   public genre!: Genre;
 
   @prop({required: true})
   public releaseYear!: number;
 
-  @prop({required: true})
+  @prop({required: true, default: 0})
   public rating!: number;
 
-  @prop({required: true})
+  @prop({required: true, trim: true})
   public previewUri!: string;
 
-  @prop({required: true})
+  @prop({required: true, trim: true})
   public videoUri!: string;
 
   @prop({required: true})
   public cast!: string[];
 
-  @prop({required: true, minlength: 2, maxlength: 50})
+  @prop({required: true, minlength: 2, maxlength: 50, trim: true})
   public director!: string;
 
   @prop({required: true})
@@ -62,7 +63,7 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   @prop({required: true, match: /(\S+(\.jpg)$)/})
   public backgroundImageUri!: string;
 
-  @prop({required: true})
+  @prop({required: true, trim: true})
   public backgroundColor!: string;
 }
 

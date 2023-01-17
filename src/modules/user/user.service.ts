@@ -53,4 +53,8 @@ export default class UserService implements IUserService {
     }
     return null;
   }
+
+  public async exists(userId: string): Promise<boolean> {
+    return (await this.findById(userId)) !== null;
+  }
 }

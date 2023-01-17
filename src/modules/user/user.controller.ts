@@ -16,18 +16,18 @@ import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.j
 import {ValidateObjectIdMiddleware} from '../../middlewares/validate-objectid.middleware.js';
 import {RequestArgumentType} from '../../types/request-argument-type.type.js';
 import {UploadFileMiddleware} from '../../middlewares/upload-file.middleware.js';
-import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
 import LoggedUserResponse from './response/logged-user.response.js';
 import {JWT_ALGORITHM} from './user.constant.js';
+import {DocumentExistsMiddleware} from '../../middlewares/document-exists.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) readonly configService: IConfig,
     @inject(Component.IUserService) private readonly userService: IUserService,
-    @inject(Component.IConfig) private readonly configService: IConfig,
   ) {
-    super(logger);
+    super(logger, configService);
     this.logger.info('Register routes for UserController…');
 
     // todo <UserRoute> ?
@@ -36,7 +36,7 @@ export default class UserController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new PrivateRouteMiddleware(this.userService),
+        new UploadFileMiddleware('profilePictureUri', this.configService.get('UPLOAD_DIRECTORY')),
         new ValidateDtoMiddleware(CreateUserDto)]
     });
     this.addRoute({
@@ -52,9 +52,13 @@ export default class UserController extends Controller {
       handler: this.uploadProfilePicture,
       middlewares: [
         new ValidateObjectIdMiddleware({where: RequestArgumentType.Path, name: 'userId'}),
+        new DocumentExistsMiddleware(
+          this.userService,
+          'user',
+          {where: RequestArgumentType.Path, name: 'userId'}
+        ),
         new UploadFileMiddleware(
           'profilePicture',
-          this.userService,
           this.configService.get('UPLOAD_DIRECTORY')
         ),
       ]
@@ -80,9 +84,9 @@ export default class UserController extends Controller {
     const createdUser: UserResponse = result;
 
     if (req.file) {
-      const avatarPath = req.file.path.slice(1);
-      await this.userService.setProfilePictureUri(result.id, avatarPath);
-      createdUser.profilePictureUri = avatarPath;
+      const profilePictureUri = req.file.filename;
+      await this.userService.setProfilePictureUri(result.id, profilePictureUri);
+      createdUser.profilePictureUri = profilePictureUri;
     }
     this.created(res, fillDTO(UserResponse, createdUser));
   }
@@ -113,17 +117,23 @@ export default class UserController extends Controller {
     req: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>,
     res: Response
   ): Promise<void> {
+    if (!req.user) {
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Unauthorized',
+        'UserController'
+      );
+    }
+
     const user = await this.userService.findByEmail(req.user.email);
     this.ok(res, fillDTO(LoggedUserResponse, user));
   }
 
   async uploadProfilePicture(req: Request, res: Response) {
-    const createdFilePath = req.file?.path;
-    if (createdFilePath) {
-      await this.userService.setProfilePictureUri(req.params.userId, createdFilePath);
-      this.created(res, {
-        filepath: createdFilePath
-      });
+    if (req.file) {
+      const createdFileName = req.file.filename;
+      await this.userService.setProfilePictureUri(req.params.userId, createdFileName);
+      this.created(res, {profilePictureUri: createdFileName});
     }
   }
 }
