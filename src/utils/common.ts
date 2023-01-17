@@ -1,5 +1,7 @@
 import * as crypto from 'crypto';
 import {ClassConstructor, plainToInstance} from 'class-transformer';
+import {ValidationError} from 'class-validator';
+import {ValidationErrorField} from '../types/validation-error-field.type.js';
 
 export const createSHA256 = (line: string, salt: string): string => {
   const shaHasher = crypto.createHmac('sha256', salt);
@@ -12,3 +14,10 @@ export const fillDTO = <T, V>(someDto: ClassConstructor<T>, plainObject: V) =>
 export const createErrorObject = (message: string) => ({
   error: message,
 });
+
+export const transformErrors = (errors: ValidationError[]): ValidationErrorField[] =>
+  errors.map(({property, value, constraints}) => ({
+    property,
+    value,
+    messages: constraints ? Object.values(constraints) : []
+  }));

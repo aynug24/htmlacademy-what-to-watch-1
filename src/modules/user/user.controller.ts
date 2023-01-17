@@ -12,6 +12,10 @@ import {fillDTO} from '../../utils/common.js';
 import UserResponse from './response/user.response.js';
 import {IConfig} from '../../common/config/config.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
+import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.js';
+import {ValidateObjectIdMiddleware} from '../../middlewares/validate-objectid.middleware.js';
+import {RequestArgumentType} from '../../types/request-argument-type.type.js';
+import {UploadFileMiddleware} from '../../middlewares/upload-file.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -23,8 +27,30 @@ export default class UserController extends Controller {
     super(logger);
     this.logger.info('Register routes for UserController…');
 
-    this.addRoute({path: '/register', method: HttpMethod.Post, handler: this.create});
-    this.addRoute({path: '/login', method: HttpMethod.Post, handler: this.login});
+    // todo <UserRoute> ?
+    this.addRoute({
+      path: '/register',
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
+    });
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Post,
+      handler: this.login,
+      middlewares: [new ValidateDtoMiddleware(LoginUserDto)]
+    });
+    this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.get});
+    this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
+    this.addRoute({
+      path: '/:userId/profilePicture',
+      method: HttpMethod.Post,
+      handler: this.uploadProfilePicture,
+      middlewares: [
+        new ValidateObjectIdMiddleware({where: RequestArgumentType.Path, name: 'userId'}),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'profilePicture'),
+      ]
+    });
   }
 
   public async create(
@@ -64,5 +90,25 @@ export default class UserController extends Controller {
       'Not implemented',
       'UserController',
     );
+  }
+
+  public async get(
+    _: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>,
+    _res: Response
+  ): Promise<void> {
+    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController');
+  }
+
+  public async logout(
+    _: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>,
+    _res: Response
+  ): Promise<void> {
+    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController');
+  }
+
+  async uploadProfilePicture(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }

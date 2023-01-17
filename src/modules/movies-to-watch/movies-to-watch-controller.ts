@@ -28,7 +28,7 @@ export default class MoviesToWatchController extends Controller {
   }
 
   public async get(_req: Request, res: Response): Promise<void> {
-    const userId = '0'; // tmp
+    const userId = '0'; // todo from token
     const moviesToWatch = await this.moviesToWatchService.find(userId);
     if (!moviesToWatch) {
       throw new HttpError(StatusCodes.NOT_FOUND, 'Todo: what\'s not found?');

@@ -8,5 +8,5 @@ export default class UserResponse {
   public email!: string;
 
   @Expose()
-  public profilePictureUri!: string;
+  public profilePictureUri?: string;
 }
