@@ -2,7 +2,7 @@ import {IsInt, IsMongoId, IsString, Length, Max, Min} from 'class-validator';
 
 export default class CreateCommentDto {
   @IsString({message: 'Required text'})
-  @Length(5, 1024, {message: 'Text length should be 2-100 characters'})
+  @Length(5, 1024, {message: 'Text length should be 5-1024 characters'})
   public text!: string;
 
   @IsInt({message: 'Rating should be an integer'})
@@ -12,7 +12,4 @@ export default class CreateCommentDto {
 
   @IsMongoId({message: 'movieId should be a valid id'})
   public movieId!: string;
-
-  @IsMongoId({message: 'userId should be a valid id'})
-  public userId!: string;
 }

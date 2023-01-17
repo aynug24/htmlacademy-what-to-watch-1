@@ -4,59 +4,70 @@ import {Controller} from '../../common/controller/controller.js';
 import {Component} from '../../types/component.types.js';
 import {ILogger} from '../../common/logger/logger.interface.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
-import {StatusCodes} from 'http-status-codes';
 import {fillDTO} from '../../utils/common.js';
-import HttpError from '../../common/errors/http-error.js';
 import {IMoviesToWatchService} from './movies-to-watch.interface.js';
 import MovieSummaryResponse from '../movie/response/movie-summary.response.js';
-
-type AnyRecord = Record<string, unknown>;
+import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
+import {IUserService} from '../user/user-service.interface.js';
 
 @injectable()
 export default class MoviesToWatchController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
     @inject(Component.IMoviesToWatchService) private readonly moviesToWatchService: IMoviesToWatchService,
+    @inject(Component.IUserService) private readonly userService: IUserService
   ) {
     super(logger);
 
     this.logger.info('Register routes for MovieController…');
 
-    this.addRoute({path: '/', method: HttpMethod.Get, handler: this.get});
-    this.addRoute({path: '/', method: HttpMethod.Post, handler: this.add});
-    this.addRoute({path: '/', method: HttpMethod.Delete, handler: this.delete});
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Get,
+      handler: this.get,
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
+    });
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Post,
+      handler: this.add,
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
+    });
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Delete,
+      handler: this.delete,
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
+    });
   }
 
-  public async get(_req: Request, res: Response): Promise<void> {
-    const userId = '0'; // todo from token
-    const moviesToWatch = await this.moviesToWatchService.find(userId);
+  public async get({user}: Request, res: Response): Promise<void> {
+    const moviesToWatch = await this.moviesToWatchService.find(user.id);
     if (!moviesToWatch) {
-      throw new HttpError(StatusCodes.NOT_FOUND, 'Todo: what\'s not found?');
+      throw new Error(`Couldn't find movies to watch for user ${user.id}`);
     }
 
     this.ok(res, fillDTO(MovieSummaryResponse, moviesToWatch.movies));
   }
 
-  public async add({body}: Request<AnyRecord, AnyRecord, string>, res: Response): Promise<void> {
-    const movieId = body;
-    const userId = '0';
-
-    const moviesToWatch = await this.moviesToWatchService.add(userId, movieId);
-    if (!moviesToWatch) {
-      throw new HttpError(StatusCodes.NOT_FOUND, `Couldn't find user with id=${userId} or movie with id=${movieId}`);
-    }
-
-    this.ok(res, fillDTO(MovieSummaryResponse, moviesToWatch.movies));
+  public async add({
+    body,
+    user
+  }: Request<Record<string, unknown>, Record<string, unknown>, { movieId: string }>, res: Response): Promise<void> {
+    await this.moviesToWatchService.add(user.id, body.movieId);
+    this.ok(res, {message: 'Added movie to to-watch list'});
   }
 
-  public async delete({body}: Request<AnyRecord, AnyRecord, string>, res: Response): Promise<void> {
-    const movieId = body;
-    const userId = '0';
+  public async delete({
+    body,
+    user
+  }: Request<Record<string, unknown>, Record<string, unknown>, { movieId: string }>, res: Response): Promise<void> {
 
-    const moviesToWatch = await this.moviesToWatchService.delete(userId, movieId);
+    const moviesToWatch = await this.moviesToWatchService.delete(user.id, body.movieId);
     if (!moviesToWatch) {
-      throw new HttpError(StatusCodes.NOT_FOUND, `Couldn't find user with id=${userId} or movies with id=${movieId}`);
+      throw new Error(`Couldn't find movies to watch for user ${user.id}`);
     }
-    this.noContent(res, fillDTO(MovieSummaryResponse, moviesToWatch.movies));
+
+    this.noContent(res, {message: 'Deleted user\'s to-watch movies'});
   }
 }

@@ -8,7 +8,7 @@ import CreateUserDto from './dto/create-user.dto.js';
 import {IUserService} from './user-service.interface.js';
 import HttpError from '../../common/errors/http-error.js';
 import {StatusCodes} from 'http-status-codes';
-import {fillDTO} from '../../utils/common.js';
+import {createJWT, fillDTO} from '../../utils/common.js';
 import UserResponse from './response/user.response.js';
 import {IConfig} from '../../common/config/config.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
@@ -16,6 +16,9 @@ import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.j
 import {ValidateObjectIdMiddleware} from '../../middlewares/validate-objectid.middleware.js';
 import {RequestArgumentType} from '../../types/request-argument-type.type.js';
 import {UploadFileMiddleware} from '../../middlewares/upload-file.middleware.js';
+import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
+import LoggedUserResponse from './response/logged-user.response.js';
+import {JWT_ALGORITHM} from './user.constant.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -32,7 +35,9 @@ export default class UserController extends Controller {
       path: '/register',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
+      middlewares: [
+        new PrivateRouteMiddleware(this.userService),
+        new ValidateDtoMiddleware(CreateUserDto)]
     });
     this.addRoute({
       path: '/login',
@@ -41,22 +46,26 @@ export default class UserController extends Controller {
       middlewares: [new ValidateDtoMiddleware(LoginUserDto)]
     });
     this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.get});
-    this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
     this.addRoute({
       path: '/:userId/profilePicture',
       method: HttpMethod.Post,
       handler: this.uploadProfilePicture,
       middlewares: [
         new ValidateObjectIdMiddleware({where: RequestArgumentType.Path, name: 'userId'}),
-        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'profilePicture'),
+        new UploadFileMiddleware(
+          'profilePicture',
+          this.userService,
+          this.configService.get('UPLOAD_DIRECTORY')
+        ),
       ]
     });
   }
 
   public async create(
-    {body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>,
+    req: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>,
     res: Response,
   ): Promise<void> {
+    const body = req.body;
     const conflictingUser = await this.userService.findByEmail(body.email);
 
     if (conflictingUser) {
@@ -68,15 +77,21 @@ export default class UserController extends Controller {
     }
 
     const result = await this.userService.create(body, this.configService.get('SALT'));
-    this.created(res, fillDTO(UserResponse, result));
+    const createdUser: UserResponse = result;
+
+    if (req.file) {
+      const avatarPath = req.file.path.slice(1);
+      await this.userService.setProfilePictureUri(result.id, avatarPath);
+      createdUser.profilePictureUri = avatarPath;
+    }
+    this.created(res, fillDTO(UserResponse, createdUser));
   }
 
   public async login(
     {body}: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>,
-    _res: Response,
+    res: Response,
   ): Promise<void> {
-    const user = await this.userService.findByEmail(body.email);
-
+    const user = await this.userService.verifyUser(body, this.configService.get('SALT'));
     if (!user) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
@@ -85,30 +100,30 @@ export default class UserController extends Controller {
       );
     }
 
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController',
+    const token = await createJWT(
+      JWT_ALGORITHM,
+      this.configService.get('JWT_SECRET'),
+      {email: user.email, id: user.id}
     );
+
+    this.ok(res, fillDTO(LoggedUserResponse, {token}));
   }
 
   public async get(
-    _: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>,
-    _res: Response
+    req: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>,
+    res: Response
   ): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController');
-  }
-
-  public async logout(
-    _: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>,
-    _res: Response
-  ): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController');
+    const user = await this.userService.findByEmail(req.user.email);
+    this.ok(res, fillDTO(LoggedUserResponse, user));
   }
 
   async uploadProfilePicture(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path
-    });
+    const createdFilePath = req.file?.path;
+    if (createdFilePath) {
+      await this.userService.setProfilePictureUri(req.params.userId, createdFilePath);
+      this.created(res, {
+        filepath: createdFilePath
+      });
+    }
   }
 }

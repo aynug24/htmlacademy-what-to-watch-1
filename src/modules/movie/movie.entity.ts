@@ -56,10 +56,10 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   @prop({required: true, ref: UserEntity, type: Types.ObjectId})
   public postedByUser: Ref<UserEntity>;
 
-  @prop({required: true})
+  @prop({required: true, match: /(\S+(\.jpg)$)/})
   public posterUri!: string;
 
-  @prop({required: true})
+  @prop({required: true, match: /(\S+(\.jpg)$)/})
   public backgroundImageUri!: string;
 
   @prop({required: true})

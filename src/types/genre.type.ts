@@ -14,7 +14,7 @@ const genresStrings: readonly string[] = genres;
 
 export type Genre = typeof genres[number];
 
-function isGenre(s: string): s is Genre {
+export function isGenre(s: string): s is Genre {
   return genresStrings.includes(s);
 }
 

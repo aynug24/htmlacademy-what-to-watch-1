@@ -26,7 +26,6 @@ export class MovieTsvParser implements IParser<Movie> {
       runningLengthMin,
       postedByUserName,
       postedByUserEmail,
-      postedByUserProfilePictureUri,
       posterUri,
       backgroundImageUri,
       backgroundColor
@@ -35,7 +34,6 @@ export class MovieTsvParser implements IParser<Movie> {
     const postedByUser: User = {
       name: postedByUserName,
       email: postedByUserEmail,
-      profilePictureUri: postedByUserProfilePictureUri === '' ? undefined : postedByUserProfilePictureUri,
     };
 
     return {
