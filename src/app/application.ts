@@ -1,3 +1,4 @@
+import cors from 'cors';
 import {ILogger} from '../common/logger/logger.interface.js';
 import {IConfig} from '../common/config/config.interface.js';
 import {inject, injectable} from 'inversify';
@@ -43,6 +44,7 @@ export default class Application {
 
     const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApp.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.expressApp.use(cors());
   }
 
   public initExceptionFilters() {
