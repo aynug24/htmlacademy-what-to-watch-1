@@ -13,6 +13,8 @@ import {IConfig} from '../common/config/config.interface.js';
 import {initContainer} from '../container.js';
 import {Component} from '../types/component.types.js';
 
+const DEFAULT_USER_PASSWORD = '123456';
+
 export default class ImportCommand extends CliCommand {
   private static resultColor = '#1FAF26';
   private static errorColor = '#E51717';
@@ -82,7 +84,7 @@ export default class ImportCommand extends CliCommand {
   private async saveMovie(movie: Movie, resolve: EmptyVoidFn) {
     const postedByUser = await this.userService.findOrCreate({
       ...movie.postedByUser,
-      password: this.configService.get('DEFAULT_USER_PASSWORD')
+      password: DEFAULT_USER_PASSWORD
     }, this.salt);
 
     await this.movieService.create(movie, postedByUser.id);
