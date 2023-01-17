@@ -110,7 +110,7 @@ export default class UserController extends Controller {
       {email: user.email, id: user.id}
     );
 
-    this.ok(res, fillDTO(LoggedUserResponse, {token}));
+    this.ok(res, {token});
   }
 
   public async get(
@@ -126,7 +126,7 @@ export default class UserController extends Controller {
     }
 
     const user = await this.userService.findByEmail(req.user.email);
-    this.ok(res, fillDTO(LoggedUserResponse, user));
+    this.ok(res, {...fillDTO(LoggedUserResponse, user), token: req.headers.authorization?.split(' ')[1]});
   }
 
   async uploadProfilePicture(req: Request, res: Response) {

@@ -102,8 +102,7 @@ export default class MovieController extends Controller {
       backgroundImageUri
     }, user.id);
 
-    const movie = await this.movieService.findById(result.id);
-    this.created(res, fillDTO(MovieResponse, movie));
+    this.created(res, fillDTO(MovieResponse, result));
   }
 
   public async update(

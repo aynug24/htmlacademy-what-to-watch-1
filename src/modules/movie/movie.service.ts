@@ -46,7 +46,8 @@ export default class MovieService implements IMovieService {
   public async findNew(count?: number): Promise<DocumentType<MovieEntity>[]> {
     const limit = count ?? DEFAULT_MOVIE_COUNT;
     const movies = await this.movieModel.aggregate([
-      {$sort: {publishingDate: 1}},
+      {$addFields: {id: {$toString: '$_id'}}},
+      {$sort: {postDate: 1}},
       {$limit: limit}
     ]);
     return this.movieModel.populate(movies, 'postedByUser');
@@ -54,10 +55,13 @@ export default class MovieService implements IMovieService {
 
   public async findByGenre(genre: Genre, count?: number): Promise<DocumentType<MovieEntity>[]> {
     const limit = count ?? DEFAULT_MOVIE_COUNT;
-
-    return this.movieModel
-      .find({genre}, {}, {limit})
-      .populate('postedByUser');
+    const movies = await this.movieModel.aggregate([
+      {$match: {genre}},
+      {$addFields: {id: {$toString: '$_id'}}},
+      {$sort: {postDate: 1}},
+      {$limit: limit}
+    ]);
+    return this.movieModel.populate(movies, 'postedByUser');
   }
 
   public async incrementCommentsCount(movieId: string): Promise<DocumentType<MovieEntity> | null> {
