@@ -19,11 +19,11 @@ export default class MovieService implements IMovieService {
   ) {
   }
 
-  public async create(dto: CreateMovieDto): Promise<DocumentType<MovieEntity>> {
-    const result = await this.movieModel.create(dto);
+  public async create(dto: CreateMovieDto, userId: string): Promise<DocumentType<MovieEntity>> {
+    const movie = await this.movieModel.create({...dto, postedByUser: userId});
     this.logger.info(`New Movie created: ${dto.title}`);
 
-    return result;
+    return movie;
   }
 
   public async findById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
@@ -46,7 +46,6 @@ export default class MovieService implements IMovieService {
   public async findNew(count?: number): Promise<DocumentType<MovieEntity>[]> {
     const limit = count ?? DEFAULT_MOVIE_COUNT;
     const movies = await this.movieModel.aggregate([
-      {$addFields: {id: {$toString: '$_id'}}},
       {$sort: {publishingDate: 1}},
       {$limit: limit}
     ]);
@@ -56,13 +55,9 @@ export default class MovieService implements IMovieService {
   public async findByGenre(genre: Genre, count?: number): Promise<DocumentType<MovieEntity>[]> {
     const limit = count ?? DEFAULT_MOVIE_COUNT;
 
-    const movies = await this.movieModel.aggregate([
-      {$match: {genre}},
-      {$addFields: {id: {$toString: '$_id'}}},
-      {$sort: {publishingDate: 1}},
-      {$limit: limit}
-    ]);
-    return this.movieModel.populate(movies, 'postedByUser');
+    return this.movieModel
+      .find({genre}, {}, {limit})
+      .populate('postedByUser');
   }
 
   public async incrementCommentsCount(movieId: string): Promise<DocumentType<MovieEntity> | null> {

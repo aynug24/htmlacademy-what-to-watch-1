@@ -1,4 +1,4 @@
-import {IsEmail, IsString, Length, Matches} from 'class-validator';
+import {IsEmail, IsOptional, IsString, Length, Matches} from 'class-validator';
 
 export default class CreateUserDto {
   @IsEmail({}, {message: 'Invalid email'})
@@ -13,4 +13,7 @@ export default class CreateUserDto {
   @IsString({message: 'Required password'})
   @Length(6, 12, {message: 'Expected password length to be 6 to 12 characters'})
   public password!: string;
+
+  @IsOptional()
+  public profilePicture?: Buffer;
 }

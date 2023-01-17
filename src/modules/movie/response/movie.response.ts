@@ -1,5 +1,6 @@
 import {Genre} from '../../../types/genre.type.js';
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
+import UserResponse from '../../user/response/user.response.js';
 
 export default class MovieResponse {
   @Expose()
@@ -39,7 +40,8 @@ export default class MovieResponse {
   public commentCount!: number;
 
   @Expose()
-  public postedByUser!: string;
+  @Type(() => UserResponse)
+  public postedByUser!: UserResponse;
 
   @Expose()
   public posterUri!: string;
@@ -49,4 +51,7 @@ export default class MovieResponse {
 
   @Expose()
   public backgroundColor!: string;
+
+  @Expose()
+  public commentsCount!: number;
 }

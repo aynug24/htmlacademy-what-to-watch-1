@@ -1,8 +1,6 @@
 import {Request, Response} from 'express';
-import {StatusCodes} from 'http-status-codes';
 import {inject} from 'inversify';
 import {Controller} from '../../common/controller/controller.js';
-import HttpError from '../../common/errors/http-error.js';
 import {ValidateDtoMiddleware} from '../../middlewares/validate-dto.middleware.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
 import {IMovieService} from '../movie/movie-service.interface.js';
@@ -15,11 +13,14 @@ import {RequestArgumentType} from '../../types/request-argument-type.type.js';
 import {Component} from '../../types/component.types.js';
 import {ILogger} from '../../common/logger/logger.interface.js';
 import {fillDTO} from '../../utils/common.js';
+import {IUserService} from '../user/user-service.interface.js';
+import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
 
 export default class CommentController extends Controller {
   constructor(@inject(Component.ILogger) logger: ILogger,
     @inject(Component.ICommentService) private readonly commentService: ICommentService,
-    @inject(Component.IMovieService) private readonly movieService: IMovieService) {
+    @inject(Component.IMovieService) private readonly movieService: IMovieService,
+    @inject(Component.IUserService) private readonly userService: IUserService) {
     super(logger);
 
     this.logger.info('Register routes for CommentController.');
@@ -28,14 +29,20 @@ export default class CommentController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new ValidateObjectIdMiddleware({where: RequestArgumentType.Query, name: 'movieId'}),
+        new PrivateRouteMiddleware(this.userService),
+        new ValidateObjectIdMiddleware({where: RequestArgumentType.Body, name: 'movieId'}),
+        new DocumentExistsMiddleware(
+          this.movieService,
+          'movie',
+          {where: RequestArgumentType.Body, name: 'movieId'}
+        ),
         new ValidateDtoMiddleware(CreateCommentDto)
       ]
     });
     this.addRoute({
       path: '/',
       method: HttpMethod.Get,
-      handler: this.get,
+      handler: this.find,
       middlewares: [
         new ValidateObjectIdMiddleware({where: RequestArgumentType.Query, name: 'movieId'}),
         new DocumentExistsMiddleware(
@@ -47,21 +54,15 @@ export default class CommentController extends Controller {
     });
   }
 
-  public async create({body, query}: Request<object, object, CreateCommentDto, {movieId?: string}>, res: Response): Promise<void> {
-    const movieId = query.movieId ?? '';
-    if (!await this.movieService.exists(movieId)) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Movie with id ${body.movieId} not found.`,
-        'CommentController'
-      );
-    }
-
-    const comment = await this.commentService.create(body);
+  public async create(
+    {body, user}: Request<object, object, CreateCommentDto, { movieId?: string }>,
+    res: Response
+  ): Promise<void> {
+    const comment = await this.commentService.create(body, user.id);
     this.created(res, fillDTO(CommentResponse, comment));
   }
 
-  async get({query}: Request<unknown, unknown, unknown, {movieId?: string}>, res: Response): Promise<void> {
+  public async find({query}: Request<unknown, unknown, unknown, { movieId?: string }>, res: Response): Promise<void> {
     const movieId = query.movieId ?? '';
     const comments = await this.commentService.findByMovieId(movieId);
     this.ok(res, fillDTO(CommentResponse, comments));

@@ -15,7 +15,7 @@ export default class PromoMovieService implements IPromoMovieService {
   public async find(): Promise<DocumentType<MovieEntity> | null> {
     const promoMovie = await this.promoMovieModel
       .findOne()
-      .populate<{movie: MovieEntity}>('movie')
+      .populate<{movie: MovieEntity}>('movie') // todo мб фигня
       .exec();
 
     if (!promoMovie || !isDocument(promoMovie.movie)) {

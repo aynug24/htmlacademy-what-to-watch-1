@@ -3,21 +3,15 @@ import TsvFileReader from '../common/file-reader/tsv-file-reader.js';
 import {MovieTsvParser} from '../common/parsers/movie-tsv-parser.js';
 import {CommandResult} from './command-result.js';
 import FileReader from '../common/file-reader/file-reader.js';
-import UserService from '../modules/user/user.service.js';
-import ConsoleLoggerService from '../common/logger/console-logger.service.js';
-import DatabaseService from '../common/database-client/database.service.js';
-import {UserModel} from '../modules/user/user.entity.js';
 import {IDatabase} from '../common/database-client/database.interface.js';
 import {IUserService} from '../modules/user/user-service.interface.js';
-import {ILogger} from '../common/logger/logger.interface.js';
 import {IMovieService} from '../modules/movie/movie-service.interface.js';
-import {MovieModel} from '../modules/movie/movie.entity.js';
-import MovieService from '../modules/movie/movie.service.js';
 import {Movie} from '../types/movie.type.js';
 import {getURI} from '../utils/db.js';
 import {EmptyVoidFn} from '@typegoose/typegoose/lib/types.js';
 import {IConfig} from '../common/config/config.interface.js';
-import ConfigService from '../common/config/config.service.js';
+import {initContainer} from '../container.js';
+import {Component} from '../types/component.types.js';
 
 export default class ImportCommand extends CliCommand {
   private static resultColor = '#1FAF26';
@@ -27,17 +21,17 @@ export default class ImportCommand extends CliCommand {
   private userService!: IUserService;
   private movieService!: IMovieService;
   private databaseService!: IDatabase;
-  private logger: ILogger;
   private salt!: string;
 
   constructor() {
     super('import');
 
-    this.configService = new ConfigService(new ConsoleLoggerService());
-    this.logger = new ConsoleLoggerService();
-    this.movieService = new MovieService(this.logger, MovieModel);
-    this.userService = new UserService(this.logger, UserModel);
-    this.databaseService = new DatabaseService(this.logger);
+    const container = initContainer();
+
+    this.configService = container.get<IConfig>(Component.IConfig);
+    this.movieService = container.get<IMovieService>(Component.IMovieService);
+    this.userService = container.get<IUserService>(Component.IUserService);
+    this.databaseService = container.get<IDatabase>(Component.IDatabase);
   }
 
   public async execute(
@@ -91,10 +85,7 @@ export default class ImportCommand extends CliCommand {
       password: this.configService.get('DEFAULT_USER_PASSWORD')
     }, this.salt);
 
-    await this.movieService.create({
-      ...movie,
-      postedByUser: postedByUser.id,
-    });
+    await this.movieService.create(movie, postedByUser.id);
 
     resolve();
   }
