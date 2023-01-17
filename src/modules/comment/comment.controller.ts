@@ -15,13 +15,15 @@ import {ILogger} from '../../common/logger/logger.interface.js';
 import {fillDTO} from '../../utils/common.js';
 import {IUserService} from '../user/user-service.interface.js';
 import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
+import {IConfig} from '../../common/config/config.interface.js';
 
 export default class CommentController extends Controller {
   constructor(@inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) configService: IConfig,
     @inject(Component.ICommentService) private readonly commentService: ICommentService,
     @inject(Component.IMovieService) private readonly movieService: IMovieService,
     @inject(Component.IUserService) private readonly userService: IUserService) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for CommentController.');
     this.addRoute({

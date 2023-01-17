@@ -9,14 +9,16 @@ import {fillDTO} from '../../utils/common.js';
 import HttpError from '../../common/errors/http-error.js';
 import {IPromoMovieService} from './promo-movie-service.interface.js';
 import MovieResponse from '../movie/response/movie.response.js';
+import {IConfig} from '../../common/config/config.interface.js';
 
 @injectable()
 export default class PromoMovieController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) configService: IConfig,
     @inject(Component.IPromoMovieService) private readonly promoMovieService: IPromoMovieService,
   ) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for PromoMovieController…');
 

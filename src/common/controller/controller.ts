@@ -5,12 +5,18 @@ import asyncHandler from 'express-async-handler';
 import {ILogger} from '../logger/logger.interface.js';
 import {IRoute} from '../../types/route.interface.js';
 import {IController} from './controller.interface.js';
+import {IConfig} from '../config/config.interface.js';
+import {getFullServerPath, transformObject} from '../../utils/common.js';
+import {STATIC_RESOURCE_FIELDS} from '../../app/application.contants.js';
 
 @injectable()
 export abstract class Controller implements IController {
   private readonly _router: Router;
 
-  constructor(protected readonly logger: ILogger) {
+  constructor(
+    protected readonly logger: ILogger,
+    protected readonly configService: IConfig
+  ) {
     this._router = Router();
   }
 
@@ -30,9 +36,19 @@ export abstract class Controller implements IController {
     this.logger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }
 
+  protected addStaticPath(data: Record<string, unknown>): void {
+    const fullServerPath = getFullServerPath(this.configService.get('HOST'), this.configService.get('PORT'));
+    transformObject(
+      STATIC_RESOURCE_FIELDS,
+      `${fullServerPath}${this.configService.get('STATIC_DIRECTORY_PATH')}`,
+      `${fullServerPath}${this.configService.get('UPLOAD_DIRECTORY')}`,
+      data
+    );
+  }
+
   public send<T>(res: Response, statusCode: number, data: T): void {
-    res
-      .type('application/json')
+    this.addStaticPath(Object(data));
+    res.type('application/json')
       .status(statusCode)
       .json(data);
   }

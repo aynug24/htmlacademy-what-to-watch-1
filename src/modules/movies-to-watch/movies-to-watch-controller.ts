@@ -9,15 +9,17 @@ import {IMoviesToWatchService} from './movies-to-watch.interface.js';
 import MovieSummaryResponse from '../movie/response/movie-summary.response.js';
 import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
 import {IUserService} from '../user/user-service.interface.js';
+import {IConfig} from '../../common/config/config.interface.js';
 
 @injectable()
 export default class MoviesToWatchController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) configService: IConfig,
     @inject(Component.IMoviesToWatchService) private readonly moviesToWatchService: IMoviesToWatchService,
     @inject(Component.IUserService) private readonly userService: IUserService
   ) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for MovieController…');
 

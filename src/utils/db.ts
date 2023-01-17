@@ -1,4 +1,4 @@
-export const getURI = (
+export const getDbUri = (
   username: string,
   password: string,
   host: string,

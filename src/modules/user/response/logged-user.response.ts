@@ -11,5 +11,5 @@ export default class LoggedUserResponse {
   public name!: string;
 
   @Expose()
-  public avatarPath?: string;
+  public profilePictureUri?: string;
 }
