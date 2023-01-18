@@ -12,6 +12,4 @@ export interface IMovieService extends IDocumentExists {
   deleteById(movieId: string): Promise<DocumentType<MovieEntity> | null>;
   findNew(count?: number): Promise<DocumentType<MovieEntity>[]>;
   findByGenre(genre: Genre, count?: number): Promise<DocumentType<MovieEntity>[]>;
-  incrementCommentsCount(movieId: string): Promise<DocumentType<MovieEntity> | null>;
-  updateMovieRating(movieId: string, newRating: number): Promise<DocumentType<MovieEntity> | null>;
 }

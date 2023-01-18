@@ -1,17 +1,21 @@
-export const GENRE_ARRAY = ['comedy', 'crime', 'documentary', 'drama', 'horror', 'family', 'romance', 'scifi', 'thriller'];
+import UserDto from '../user/user.dto';
+import {TGenre} from './create-movie.dto';
+import {Expose} from 'class-transformer';
 
-export type TGenre = typeof GENRE_ARRAY[number];
+export default class MovieResponse {
+  public id!: string;
 
-export default class CreateMovieDto {
   public title!: string;
 
   public description!: string;
 
-  public postDate!: Date;
+  public postDate!: number;
 
   public genre!: TGenre;
 
   public releaseYear!: number;
+
+  public rating!: number;
 
   public previewUri!: string;
 
@@ -22,6 +26,8 @@ export default class CreateMovieDto {
   public director!: string;
 
   public runningLengthMin!: number;
+
+  public postedByUser!: UserDto;
 
   public posterUri!: string;
 

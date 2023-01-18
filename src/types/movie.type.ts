@@ -15,7 +15,6 @@ export type Movie = {
   director: string,
   runningLengthMin: number,
 
-  commentCount?: number,
   postedByUser: User,
   posterUri: string,
   backgroundImageUri: string

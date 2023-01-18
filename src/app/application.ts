@@ -1,4 +1,5 @@
 import cors from 'cors';
+import 'reflect-metadata';
 import {ILogger} from '../common/logger/logger.interface.js';
 import {IConfig} from '../common/config/config.interface.js';
 import {inject, injectable} from 'inversify';
@@ -21,7 +22,7 @@ export default class Application {
     @inject(Component.IDatabase) private databaseClient: IDatabase,
     @inject(Component.IExceptionFilter) private exceptionFilter: IExceptionFilter,
     @inject(Component.MovieController) private movieController: IController,
-    @inject(Component.MoviesToWatchModel) private moviesToWatchController: IController,
+    @inject(Component.MoviesToWatchController) private moviesToWatchController: IController,
     @inject(Component.PromoMovieController) private promoMovieController: IController,
     @inject(Component.UserController) private userController: IController,
     @inject(Component.CommentController) private commentController: IController,

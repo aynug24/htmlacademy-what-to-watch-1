@@ -12,7 +12,7 @@ export default class CommentResponse {
   public postDate!: string;
 
   @Expose()
-  public rating!: number;
+  public score!: number;
 
   @Expose({name: 'userId'})
   @Type(() => UserResponse)

@@ -45,7 +45,7 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   @prop({required: true, trim: true})
   public videoUri!: string;
 
-  @prop({required: true})
+  @prop({required: true, type: String})
   public cast!: string[];
 
   @prop({required: true, minlength: 2, maxlength: 50, trim: true})

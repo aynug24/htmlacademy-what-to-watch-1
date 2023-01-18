@@ -64,20 +64,6 @@ export default class MovieService implements IMovieService {
     return this.movieModel.populate(movies, 'postedByUser');
   }
 
-  public async incrementCommentsCount(movieId: string): Promise<DocumentType<MovieEntity> | null> {
-    return this.movieModel.findByIdAndUpdate(movieId, {$inc: {commentsCount: 1}});
-  }
-
-  public async updateMovieRating(movieId: string, newScore: number): Promise<DocumentType<MovieEntity> | null> {
-    const oldRatingData = await this.movieModel.findById(movieId).select('rating commentsCount');
-    const [oldRating, oldCommentsCount] = [oldRatingData?.['rating'] ?? 0, oldRatingData?.['commentsCount'] ?? 0];
-
-    const newRating = (oldRating * oldCommentsCount + newScore) / (oldCommentsCount + 1);
-
-    return this.movieModel.findByIdAndUpdate(movieId, {rating: newRating});
-  }
-
-
   public async exists(movieId: string): Promise<boolean> {
     return (await this.movieModel.exists({_id: movieId})) !== null;
   }

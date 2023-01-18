@@ -1,6 +1,6 @@
 import CommentDto from '../../dto/comment/comment.dto';
-import MovieListItemDto from '../../dto/movie/movie-list-item.dto';
-import MovieDto from '../../dto/movie/movie.dto';
+import MovieSummaryResponse from '../../dto/movie/movie-summary.response.js';
+import MovieResponse from '../../dto/movie/movie.response.js';
 import UserDto from '../../dto/user/user.dto';
 import {Film, FilmListItem} from '../../types/film';
 import {Review} from '../../types/review';
@@ -8,43 +8,43 @@ import {User} from '../../types/user';
 
 export const adaptUserToClient = (user: UserDto): User => ({
   name: user.name,
-  avatarUrl: user.avatarPath,
+  avatarUrl: user.profilePictureUri,
   email: user.email,
   token: user.token || ''
 });
 
-export const adaptMovieToClient = (movie: MovieDto): Film => ({
+export const adaptMovieToClient = (movie: MovieResponse): Film => ({
   id: movie.id,
   name: movie.title,
-  posterImage: movie.posterPath,
-  backgroundImage: movie.backgroundImagePath,
+  posterImage: movie.posterUri,
+  backgroundImage: movie.backgroundImageUri,
   backgroundColor: movie.backgroundColor,
-  videoLink: movie.moviePath,
-  previewVideoLink: movie.previewPath,
+  videoLink: movie.videoUri,
+  previewVideoLink: movie.previewUri,
   description: movie.description,
   rating: movie.rating,
   director: movie.director,
-  starring: movie.actors,
-  runTime: movie.durationInMinutes,
+  starring: movie.cast,
+  runTime: movie.runningLengthMin,
   genre: movie.genre,
   released: movie.releaseYear,
   isFavorite: false,
-  user: adaptUserToClient(movie.user)
+  user: adaptUserToClient(movie.postedByUser)
 });
 
-export const adaptMovieListItemToClient = (movie: MovieListItemDto): FilmListItem => ({
+export const adaptMovieListItemToClient = (movie: MovieSummaryResponse): FilmListItem => ({
   id: movie.id,
   name: movie.title,
   genre: movie.genre,
-  released: movie.publishingDate,
-  user: adaptUserToClient(movie.user),
-  posterImage: movie.posterPath,
-  previewVideoLink: movie.previewPath
+  released: movie.postDate,
+  user: adaptUserToClient(movie.postedByUser),
+  posterImage: movie.posterUri,
+  previewVideoLink: movie.previewUri
 });
 
 export const adaptCommentToClient = (comment: CommentDto): Review => ({
   comment: comment.text,
-  rating: comment.rating,
+  rating: comment.score,
   id: comment.id,
   date: comment.postDate,
   user: {

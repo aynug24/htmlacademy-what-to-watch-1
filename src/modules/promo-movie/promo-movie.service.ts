@@ -1,6 +1,6 @@
 import {inject, injectable} from 'inversify';
 import {IPromoMovieService} from './promo-movie-service.interface.js';
-import {DocumentType, isDocument, types} from '@typegoose/typegoose';
+import {types} from '@typegoose/typegoose';
 import {PromoMovieEntity} from './promo-movie.entity.js';
 import {Component} from '../../types/component.types.js';
 import {MovieEntity} from '../movie/movie.entity.js';
@@ -12,13 +12,13 @@ export default class PromoMovieService implements IPromoMovieService {
   ) {
   }
 
-  public async find(): Promise<DocumentType<MovieEntity> | null> {
+  public async find(): Promise<MovieEntity | null> {
     const promoMovie = await this.promoMovieModel
       .findOne()
       .populate<{movie: MovieEntity}>('movie') // todo мб фигня
       .exec();
 
-    if (!promoMovie || !isDocument(promoMovie.movie)) {
+    if (!promoMovie) {
       return null;
     }
 

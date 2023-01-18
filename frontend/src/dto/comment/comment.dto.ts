@@ -7,7 +7,7 @@ export default class CommentDto {
 
   public postDate!: string;
 
-  public rating!: number;
+  public score!: number;
 
   public user!: UserDto;
 }
