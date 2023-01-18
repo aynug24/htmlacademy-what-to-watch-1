@@ -27,6 +27,11 @@ export default class MoviesToWatchService implements IMoviesToWatchService {
   }
 
   public async delete(userId: string, movieId: string): Promise<DocumentType<MoviesToWatchEntity> | null> {
-    return this.moviesToWatchModel.findByIdAndUpdate({userId}, {$pull: {movies: movieId}}, {new: true});
+    return this.moviesToWatchModel
+      .findByIdAndUpdate(
+        userId,
+        {$pull: {movies: movieId}},
+        {new: true}
+      );
   }
 }

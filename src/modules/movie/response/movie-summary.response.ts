@@ -26,5 +26,5 @@ export default class MovieSummaryResponse {
   public posterUri!: string;
 
   @Expose()
-  public commentCount?: number;
+  public commentsCount?: number;
 }

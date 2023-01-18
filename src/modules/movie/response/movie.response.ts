@@ -40,9 +40,6 @@ export default class MovieResponse {
   public runningLengthMin!: number;
 
   @Expose()
-  public commentCount!: number;
-
-  @Expose()
   @Type(() => UserResponse)
   public postedByUser!: UserResponse;
 

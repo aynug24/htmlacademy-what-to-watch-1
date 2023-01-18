@@ -23,8 +23,10 @@ export default class MovieService implements IMovieService {
   public async create(dto: CreateMovieDto, userId: string): Promise<DocumentType<MovieEntity>> {
     const movie = await this.movieModel.create({...dto, postedByUser: userId});
     this.logger.info(`New Movie created: ${dto.title}`);
-
-    return movie;
+    const movieWithUser = await movie.populate('postedByUser');
+    console.log(movie);
+    console.log(movieWithUser);
+    return movieWithUser;
   }
 
   public async findById(movieId: string): Promise<DocumentType<MovieEntity> | null> {

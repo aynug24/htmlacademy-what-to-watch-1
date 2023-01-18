@@ -1,2 +1,207 @@
-GET http://localhost:3123/api
+###
+
+POST http://localhost:4200/users/login HTTP/1.1
+Accept: application/json
 Content-Type: application/json
+
+
+{
+  "email": "MarieWilson1995@career.com",
+  "password": "123456"
+}
+
+> {% client.global.set("token", response.body.token); %}
+###
+
+# Фильмы
+## Добавить новый фильм
+POST http://localhost:4200/movies HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "ABCEGOENWSKN",
+  "description": "EFJleo neofGIBEoig boERB Goireb oier bouireb oujer ujb ",
+  "postDate": "2022-10-21T22:55:33.903Z",
+  "genre": "thriller",
+  "releaseYear": 2013,
+  "previewUri": "/preview",
+  "videoUri": "/video",
+  "cast": [
+    "Star A",
+    "Star B"
+  ],
+  "director": "Dir /usr",
+  "runningLengthMin": 70,
+  "posterUri": "hunger_games_poster.jpg",
+  "backgroundImageUri": "hunger_games_bg.jpg",
+  "backgroundColor": "#789651"
+}
+
+> {% client.log(response.body.id); client.global.set("movieId", response.body.id); %}
+###
+
+## Редактирование карточки фильма
+PATCH http://localhost:4200/movies/{{movieId}} HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Король лев",
+  "description": "EFJleo neofGIBEoig boERB Goireb oier bouireb oujer ujb ",
+  "postDate": "2022-10-22T22:55:33.903Z",
+  "genre": "drama",
+  "releaseYear": 2013,
+  "previewUri": "/ppreview",
+  "videoUri": "/vvideo",
+  "cast": [
+    "Star B",
+    "Star C"
+  ],
+  "director": "Dir /tmp",
+  "runningLengthMin": 10,
+  "posterUri": "lion_king_poster.jpg",
+  "backgroundImageUri": "lion_king_bg.jpg",
+  "backgroundColor": "#788956"
+}
+
+###
+
+## Удаление карточки фильма
+DELETE http://localhost:4200/movies/{{movieId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+###
+
+## Получить список фильмов
+GET http://localhost:4200/movies?limit=5 HTTP/1.1
+Accept: application/json
+
+###
+
+## Получение списка фильмов определенного жанра
+GET http://localhost:4200/movies?genre=drama HTTP/1.1
+Accept: application/json
+
+###
+
+## Получение детальной информации по фильму
+GET http://localhost:4200/movies/{{movieId}} HTTP/1.1
+Accept: application/json
+
+###
+
+## Получение промо-фильма
+GET http://localhost:4200/promo-movie HTTP/1.1
+Accept: application/json
+
+###
+
+## Получить список фильмов «К просмотру»
+GET http://localhost:4200/movies-to-watch HTTP/1.1
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+## Добавить фильм в список «К просмотру»
+POST http://localhost:4200/movies-to-watch HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "movieId": "{{movieId}}"
+}
+
+###
+
+## Удалить фильм из списка «К просмотру»
+DELETE http://localhost:4200/movies-to-watch HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "movieId": "{{movieId}}"
+}
+
+###
+
+# Комментарии
+## Получить список комментариев для определённого фильма
+GET http://localhost:4200/comments?movieId={{movieId}} HTTP/1.1
+Accept: application/json
+
+###
+
+## Добавить новый комментарий к определённому фильму
+POST http://localhost:4200/comments HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "text": "10/10 gfhjerogn orgeribgo bnerog jbroj ibeor gjibower breo breo gjberojb",
+  "score": 10,
+  "movieId": "{{movieId}}"
+}
+
+###
+
+# Пользователи
+## Создание нового пользователя
+POST http://localhost:4200/users/register HTTP/1.1
+Content-Type: multipart/form-data; boundary=HereGoes
+
+--HereGoes
+Content-Disposition: form-data; name="email"
+Content-Type: text/plain
+
+philipp@mail.ru
+--HereGoes
+Content-Disposition: form-data; name="name"
+Content-Type: text/plain
+
+Philipp
+--HereGoes
+Content-Disposition: form-data; name="password"
+Content-Type: text/plain
+
+123456
+--HereGoes
+Content-Disposition: form-data; name="avatar"; filename="avatar.png"
+Content-Type: image/png
+
+< /Users/demelissiana/Downloads/meoweb.png
+--HereGoes--
+
+###
+
+## Отправка аватарки пользователя
+POST http://localhost:4200/users/63c018135b7fc5c78ec58099/avatar HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="avatar.png"
+Content-Type: image/png
+
+< /Users/demelissiana/Downloads/default-avatar.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+## Вход в закрытую часть приложения
+POST http://localhost:4200/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "sun@mail.ru",
+  "password": "123456"
+}
+
+###
+
+## Проверка токена пользователя
+GET http://localhost:4200/users/login HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1bkBtYWlsLnJ1IiwiaWQiOiI2M2MwMTgxMzViN2ZjNWM3OGVjNTgwOTkiLCJpYXQiOjE2NzM1NTE0MjUsImV4cCI6MTY3MzcyNDIyNX0.0pSV9wNbnw9t5_yrtGFQpWVqfZzkLrtM8vswN94EVcg

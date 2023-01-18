@@ -16,5 +16,5 @@ export default class MovieSummaryResponse {
 
   public posterUri!: string;
 
-  public commentCount!: number;
+  public commentsCount!: number;
 }
