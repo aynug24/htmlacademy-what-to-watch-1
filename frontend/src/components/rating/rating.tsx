@@ -10,7 +10,7 @@ function Rating({ onChange, currentRating }: RatingProps) {
     <div className="rating">
       <div className="rating__stars">
         {Array.from({ length: 10 }, (_, i) => {
-          const rating = i + 1;
+          const rating = 10 - i;
           return (
             <Fragment key={rating}>
               <input
