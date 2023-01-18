@@ -12,7 +12,7 @@ import {ValidateObjectIdMiddleware} from '../../middlewares/validate-objectid.mi
 import {RequestArgumentType} from '../../types/request-argument-type.type.js';
 import {Component} from '../../types/component.types.js';
 import {ILogger} from '../../common/logger/logger.interface.js';
-import {fillDTO} from '../../utils/common.js';
+import {fillDto} from '../../utils/common.js';
 import {IUserService} from '../user/user-service.interface.js';
 import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
 import {IConfig} from '../../common/config/config.interface.js';
@@ -61,12 +61,12 @@ export default class CommentController extends Controller {
     res: Response
   ): Promise<void> {
     const comment = await this.commentService.create(body, user.id);
-    this.created(res, fillDTO(CommentResponse, comment));
+    this.created(res, fillDto(CommentResponse, comment));
   }
 
   public async find({query}: Request<unknown, unknown, unknown, { movieId?: string }>, res: Response): Promise<void> {
     const movieId = query.movieId ?? '';
     const comments = await this.commentService.findByMovieId(movieId);
-    this.ok(res, fillDTO(CommentResponse, comments));
+    this.ok(res, fillDto(CommentResponse, comments));
   }
 }

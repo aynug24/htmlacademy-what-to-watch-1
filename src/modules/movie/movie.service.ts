@@ -9,6 +9,7 @@ import UpdateMovieDto from './dto/update-movie.dto.js';
 import {DEFAULT_MOVIE_COUNT} from './movie.constant.js';
 import {Genre} from '../../types/genre.type.js';
 import {ICommentService} from '../comment/comment-service.interface.js';
+import {fillDto} from '../../utils/common.js';
 
 @injectable()
 export default class MovieService implements IMovieService {
@@ -31,12 +32,18 @@ export default class MovieService implements IMovieService {
   }
 
   public async updateById(movieId: string, dto: UpdateMovieDto): Promise<DocumentType<MovieEntity> | null> {
-    return this.movieModel.findByIdAndUpdate(movieId, dto, {new: true}).populate('postedByUser');
+    console.log(dto);
+    const updateObject = fillDto(UpdateMovieDto, dto);
+    console.log(updateObject);
+    const res = await this.movieModel.findByIdAndUpdate(movieId, updateObject, {new: true}).populate('postedByUser');
+    const model: MovieEntity | null = res;
+    console.log(model);
+    return res;
   }
 
   public async deleteById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
 
-    await this.commentService.deleteByMovieId(movieId); // todo удалять из moviesToWatch?
+    await this.commentService.deleteByMovieId(movieId);
 
     return this.movieModel
       .findByIdAndDelete(movieId)

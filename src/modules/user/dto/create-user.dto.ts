@@ -1,12 +1,13 @@
 import {IsEmail, IsOptional, IsString, Length, Matches} from 'class-validator';
 
 export default class CreateUserDto {
-  @IsEmail({}, {message: 'Invalid email'})
+  @IsString({message: 'Required name'})
   public name!: string;
 
-  @IsString({message: 'Required name'})
+  @IsEmail({}, {message: 'Invalid email'})
   public email!: string;
 
+  @IsOptional()
   @Matches(/[^\\s]+\.(jpg|png)$/, {message: 'Expected .jpg or .png profile picture uri'})
   public profilePictureUri?: string;
 

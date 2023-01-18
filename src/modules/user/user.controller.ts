@@ -8,7 +8,7 @@ import CreateUserDto from './dto/create-user.dto.js';
 import {IUserService} from './user-service.interface.js';
 import HttpError from '../../common/errors/http-error.js';
 import {StatusCodes} from 'http-status-codes';
-import {createJWT, fillDTO} from '../../utils/common.js';
+import {createJWT, fillDto} from '../../utils/common.js';
 import UserResponse from './response/user.response.js';
 import {IConfig} from '../../common/config/config.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
@@ -30,7 +30,6 @@ export default class UserController extends Controller {
     super(logger, configService);
     this.logger.info('Register routes for UserController…');
 
-    // todo <UserRoute> ?
     this.addRoute({
       path: '/register',
       method: HttpMethod.Post,
@@ -88,7 +87,7 @@ export default class UserController extends Controller {
       await this.userService.setProfilePictureUri(result.id, profilePictureUri);
       createdUser.profilePictureUri = profilePictureUri;
     }
-    this.created(res, fillDTO(UserResponse, createdUser));
+    this.created(res, fillDto(UserResponse, createdUser));
   }
 
   public async login(
@@ -126,7 +125,7 @@ export default class UserController extends Controller {
     }
 
     const user = await this.userService.findByEmail(req.user.email);
-    this.ok(res, {...fillDTO(LoggedUserResponse, user), token: req.headers.authorization?.split(' ')[1]});
+    this.ok(res, {...fillDto(LoggedUserResponse, user), token: req.headers.authorization?.split(' ')[1]});
   }
 
   async uploadProfilePicture(req: Request, res: Response) {

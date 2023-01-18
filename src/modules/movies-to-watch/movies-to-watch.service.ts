@@ -14,11 +14,16 @@ export default class MoviesToWatchService implements IMoviesToWatchService {
   public async find(userId: string): Promise<DocumentType<MoviesToWatchEntity> | null> {
     return this.moviesToWatchModel
       .findById(userId)
-      .populate('movies'); // todo возможно фигня
+      .populate('movies');
   }
 
   public async add(userId: string, movieId: string): Promise<DocumentType<MoviesToWatchEntity> | null> {
-    return this.moviesToWatchModel.findByIdAndUpdate({userId}, {$addToSet: {movies: movieId}}, {new: true, upsert: true});
+    return this.moviesToWatchModel
+      .findByIdAndUpdate(
+        userId,
+        {$addToSet: {movies: movieId}},
+        {new: true, upsert: true}
+      );
   }
 
   public async delete(userId: string, movieId: string): Promise<DocumentType<MoviesToWatchEntity> | null> {

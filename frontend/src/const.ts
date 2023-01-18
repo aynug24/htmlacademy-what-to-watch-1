@@ -30,7 +30,7 @@ export enum APIRoute {
   Films = '/movies',
   Similar = '/similar',
   Promo = '/promo-movie',
-  Favorite = '/movies-to-watch', // todo мб не надо
+  Favorite = '/movies-to-watch',
   Comments = '/comments',
   Login = '/users/login',
   Logout = '/logout',
