@@ -3,40 +3,41 @@ import {Expose} from 'class-transformer';
 
 export default class UpdateMovieDto {
   @Expose()
-  title?: string;
+  public title?: string;
 
   @Expose()
-  description?: string;
+  public description?: string;
 
   @Expose()
-  postDate?: Date;
+  public postDate?: Date;
 
   @Expose()
-  genre?: Genre;
+  public genre?: Genre;
 
   @Expose()
-  releaseYear?: number;
+  public releaseYear?: number;
 
   @Expose()
-  previewUri?: string;
+  public previewUri?: string;
 
   @Expose()
-  videoUri?: string;
+  public videoUri?: string;
 
   @Expose()
-  cast?: string[];
-
-  director?: string;
+  public cast?: string[];
 
   @Expose()
-  runningLengthMin?: number;
+  public director?: string;
 
   @Expose()
-  posterUri?: string;
+  public runningLengthMin?: number;
 
   @Expose()
-  backgroundImageUri?: string;
+  public posterUri?: string;
 
   @Expose()
-  backgroundColor?: string;
+  public backgroundImageUri?: string;
+
+  @Expose()
+  public backgroundColor?: string;
 }
