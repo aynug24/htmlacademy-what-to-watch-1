@@ -23,10 +23,7 @@ export default class MovieService implements IMovieService {
   public async create(dto: CreateMovieDto, userId: string): Promise<DocumentType<MovieEntity>> {
     const movie = await this.movieModel.create({...dto, postedByUser: userId});
     this.logger.info(`New Movie created: ${dto.title}`);
-    const movieWithUser = await movie.populate('postedByUser');
-    console.log(movie);
-    console.log(movieWithUser);
-    return movieWithUser;
+    return await movie.populate('postedByUser');
   }
 
   public async findById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
@@ -34,13 +31,8 @@ export default class MovieService implements IMovieService {
   }
 
   public async updateById(movieId: string, dto: UpdateMovieDto): Promise<DocumentType<MovieEntity> | null> {
-    console.log(dto);
     const updateObject = fillDto(UpdateMovieDto, dto);
-    console.log(updateObject);
-    const res = await this.movieModel.findByIdAndUpdate(movieId, updateObject, {new: true}).populate('postedByUser');
-    const model: MovieEntity | null = res;
-    console.log(model);
-    return res;
+    return this.movieModel.findByIdAndUpdate(movieId, updateObject, {new: true}).populate('postedByUser');
   }
 
   public async deleteById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
