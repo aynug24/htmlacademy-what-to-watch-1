@@ -7,7 +7,7 @@ import {IRoute} from '../../types/route.interface.js';
 import {IController} from './controller.interface.js';
 import {IConfig} from '../config/config.interface.js';
 import {getFullServerPath, transformObject} from '../../utils/common.js';
-import {STATIC_RESOURCE_FIELDS} from '../../app/application.contants.js';
+import {STATIC_RESOURCE_FIELDS, STATIC_URI, UPLOAD_URI} from '../../app/application.contants.js';
 
 @injectable()
 export abstract class Controller implements IController {
@@ -40,8 +40,8 @@ export abstract class Controller implements IController {
     const fullServerPath = getFullServerPath(this.configService.get('HOST'), this.configService.get('PORT'));
     transformObject(
       STATIC_RESOURCE_FIELDS,
-      `${fullServerPath}${this.configService.get('STATIC_DIRECTORY_PATH')}`,
-      `${fullServerPath}${this.configService.get('UPLOAD_DIRECTORY')}`,
+      `${fullServerPath}${STATIC_URI}`,
+      `${fullServerPath}${UPLOAD_URI}`,
       data
     );
   }

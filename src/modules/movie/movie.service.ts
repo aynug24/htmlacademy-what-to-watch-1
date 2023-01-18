@@ -9,6 +9,7 @@ import UpdateMovieDto from './dto/update-movie.dto.js';
 import {DEFAULT_MOVIE_COUNT} from './movie.constant.js';
 import {Genre} from '../../types/genre.type.js';
 import {ICommentService} from '../comment/comment-service.interface.js';
+import {fillDto} from '../../utils/common.js';
 
 @injectable()
 export default class MovieService implements IMovieService {
@@ -22,8 +23,10 @@ export default class MovieService implements IMovieService {
   public async create(dto: CreateMovieDto, userId: string): Promise<DocumentType<MovieEntity>> {
     const movie = await this.movieModel.create({...dto, postedByUser: userId});
     this.logger.info(`New Movie created: ${dto.title}`);
-
-    return movie;
+    const movieWithUser = await movie.populate('postedByUser');
+    console.log(movie);
+    console.log(movieWithUser);
+    return movieWithUser;
   }
 
   public async findById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
@@ -31,12 +34,18 @@ export default class MovieService implements IMovieService {
   }
 
   public async updateById(movieId: string, dto: UpdateMovieDto): Promise<DocumentType<MovieEntity> | null> {
-    return this.movieModel.findByIdAndUpdate(movieId, dto, {new: true}).populate('postedByUser');
+    console.log(dto);
+    const updateObject = fillDto(UpdateMovieDto, dto);
+    console.log(updateObject);
+    const res = await this.movieModel.findByIdAndUpdate(movieId, updateObject, {new: true}).populate('postedByUser');
+    const model: MovieEntity | null = res;
+    console.log(model);
+    return res;
   }
 
   public async deleteById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
 
-    await this.commentService.deleteByMovieId(movieId); // todo удалять из moviesToWatch?
+    await this.commentService.deleteByMovieId(movieId);
 
     return this.movieModel
       .findByIdAndDelete(movieId)
@@ -46,7 +55,8 @@ export default class MovieService implements IMovieService {
   public async findNew(count?: number): Promise<DocumentType<MovieEntity>[]> {
     const limit = count ?? DEFAULT_MOVIE_COUNT;
     const movies = await this.movieModel.aggregate([
-      {$sort: {publishingDate: 1}},
+      {$addFields: {id: {$toString: '$_id'}}},
+      {$sort: {postDate: 1}},
       {$limit: limit}
     ]);
     return this.movieModel.populate(movies, 'postedByUser');
@@ -54,25 +64,14 @@ export default class MovieService implements IMovieService {
 
   public async findByGenre(genre: Genre, count?: number): Promise<DocumentType<MovieEntity>[]> {
     const limit = count ?? DEFAULT_MOVIE_COUNT;
-
-    return this.movieModel
-      .find({genre}, {}, {limit})
-      .populate('postedByUser');
+    const movies = await this.movieModel.aggregate([
+      {$match: {genre}},
+      {$addFields: {id: {$toString: '$_id'}}},
+      {$sort: {postDate: 1}},
+      {$limit: limit}
+    ]);
+    return this.movieModel.populate(movies, 'postedByUser');
   }
-
-  public async incrementCommentsCount(movieId: string): Promise<DocumentType<MovieEntity> | null> {
-    return this.movieModel.findByIdAndUpdate(movieId, {$inc: {commentsCount: 1}});
-  }
-
-  public async updateMovieRating(movieId: string, newScore: number): Promise<DocumentType<MovieEntity> | null> {
-    const oldRatingData = await this.movieModel.findById(movieId).select('rating commentsCount');
-    const [oldRating, oldCommentsCount] = [oldRatingData?.['rating'] ?? 0, oldRatingData?.['commentsCount'] ?? 0];
-
-    const newRating = (oldRating * oldCommentsCount + newScore) / (oldCommentsCount + 1);
-
-    return this.movieModel.findByIdAndUpdate(movieId, {rating: newRating});
-  }
-
 
   public async exists(movieId: string): Promise<boolean> {
     return (await this.movieModel.exists({_id: movieId})) !== null;

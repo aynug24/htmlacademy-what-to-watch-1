@@ -5,13 +5,14 @@ import {ValidationErrorField} from '../types/validation-error-field.type.js';
 import * as jose from 'jose';
 import {ServiceError} from '../types/service-error.enum.js';
 import {DEFAULT_STATIC_IMAGES} from '../app/application.contants.js';
+import {DEFAULT_MOVIE_BACKGROUND_IMAGES, DEFAULT_MOVIE_POSTER_IMAGES} from '../modules/movie/movie.constant.js';
 
 export const createSHA256 = (line: string, salt: string): string => {
   const shaHasher = crypto.createHmac('sha256', salt);
   return shaHasher.update(line).digest('hex');
 };
 
-export const fillDTO = <T, V>(someDto: ClassConstructor<T>, plainObject: V) =>
+export const fillDto = <T, V>(someDto: ClassConstructor<T>, plainObject: V) =>
   plainToInstance(someDto, plainObject, {excludeExtraneousValues: true, enableImplicitConversion: true});
 
 export const createJWT = async (algorithm: string, jwtSecret: string, payload: object): Promise<string> =>
@@ -56,7 +57,13 @@ export const transformProperty = (
 
 export const transformObject = (properties: string[], staticPath: string, uploadPath: string, data: Record<string, unknown>) => {
   properties.forEach((property) => transformProperty(property, data, (target: Record<string, unknown>) => {
-    const rootPath = DEFAULT_STATIC_IMAGES.includes(`${target[property]}`) ? staticPath : uploadPath;
-    target[property] = `${rootPath}/${target[property]}`;
+    const fileIsStatic = [
+      ...DEFAULT_STATIC_IMAGES,
+      ...DEFAULT_MOVIE_POSTER_IMAGES,
+      ...DEFAULT_MOVIE_BACKGROUND_IMAGES
+    ].includes(`${target[property]}`);
+
+    const filePath = fileIsStatic ? staticPath : uploadPath;
+    target[property] = `${filePath}/${target[property]}`;
   }));
 };

@@ -10,8 +10,12 @@ import {Movie} from '../types/movie.type.js';
 import {getDbUri} from '../utils/db.js';
 import {EmptyVoidFn} from '@typegoose/typegoose/lib/types.js';
 import {IConfig} from '../common/config/config.interface.js';
-import {initContainer} from '../container.js';
 import {Component} from '../types/component.types.js';
+import {appContainer} from '../container.js';
+import {IPromoMovieService} from '../modules/promo-movie/promo-movie-service.interface.js';
+import {MovieEntity} from '../modules/movie/movie.entity.js';
+
+const DEFAULT_USER_PASSWORD = '123456';
 
 export default class ImportCommand extends CliCommand {
   private static resultColor = '#1FAF26';
@@ -20,25 +24,29 @@ export default class ImportCommand extends CliCommand {
   private configService!: IConfig;
   private userService!: IUserService;
   private movieService!: IMovieService;
+  private promoMovieService!: IPromoMovieService;
   private databaseService!: IDatabase;
   private salt!: string;
 
   constructor() {
     super('import');
 
-    const container = initContainer();
-
-    this.configService = container.get<IConfig>(Component.IConfig);
-    this.movieService = container.get<IMovieService>(Component.IMovieService);
-    this.userService = container.get<IUserService>(Component.IUserService);
-    this.databaseService = container.get<IDatabase>(Component.IDatabase);
+    this.configService = appContainer.get<IConfig>(Component.IConfig);
+    this.movieService = appContainer.get<IMovieService>(Component.IMovieService);
+    this.userService = appContainer.get<IUserService>(Component.IUserService);
+    this.databaseService = appContainer.get<IDatabase>(Component.IDatabase);
+    this.promoMovieService = appContainer.get<IPromoMovieService>(Component.IPromoMovieService);
   }
 
-  public async execute(
-    path: string, login: string, password: string, host: string, dbname: string, salt: string
-  ): Promise<CommandResult> {
-    const dbUri = getDbUri(login, password, host, this.configService.get('DB_PORT'), dbname);
-    this.salt = salt;
+  public async execute(path: string): Promise<CommandResult> {
+    const dbUri = getDbUri(
+      this.configService.get('DB_USER'),
+      this.configService.get('DB_PASSWORD'),
+      this.configService.get('DB_HOST'),
+      this.configService.get('DB_PORT'),
+      this.configService.get('DB_NAME')
+    );
+    this.salt = this.configService.get('SALT');
 
     await this.databaseService.connect(dbUri);
 
@@ -82,11 +90,12 @@ export default class ImportCommand extends CliCommand {
   private async saveMovie(movie: Movie, resolve: EmptyVoidFn) {
     const postedByUser = await this.userService.findOrCreate({
       ...movie.postedByUser,
-      password: this.configService.get('DEFAULT_USER_PASSWORD')
+      password: DEFAULT_USER_PASSWORD
     }, this.salt);
 
-    await this.movieService.create(movie, postedByUser.id);
-
+    const createdMovie: MovieEntity = await this.movieService.create(movie, postedByUser._id.toString());
+    const movieId = createdMovie._id.toString();
+    await this.promoMovieService.set(movieId);
     resolve();
   }
 }

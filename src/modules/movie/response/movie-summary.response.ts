@@ -4,6 +4,9 @@ import UserResponse from '../../user/response/user.response.js';
 
 export default class MovieSummaryResponse {
   @Expose()
+  public id!: string;
+
+  @Expose()
   public title!: string;
 
   @Expose()
@@ -23,5 +26,5 @@ export default class MovieSummaryResponse {
   public posterUri!: string;
 
   @Expose()
-  public commentCount?: number;
+  public commentsCount?: number;
 }

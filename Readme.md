@@ -1,3 +1,6 @@
+# РЕКОМЕНДУЮ ПРОВЕРЯТЬ НЕЗАЩИЩЁННУЮ РЕПУ https://github.com/aynug24/htmlacademy-what-to-watch-1
+# ПОТОМУ ЧТО В ЭТУ НЕ ПОМЁРДЖИТЬ ПОСЛЕ ПОСЛЕДНЕЙ ДОМАХИ
+
 # Личный проект «Что посмотреть»
 
 * Студент: [Сергей Луговых](https://up.htmlacademy.ru/univer-nodejs-urfu/1/user/1783403).

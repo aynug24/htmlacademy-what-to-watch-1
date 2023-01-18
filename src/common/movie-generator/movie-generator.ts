@@ -10,8 +10,8 @@ import {
 import {Genre, genres} from '../../types/genre.type.js';
 import {Movie} from '../../types/movie.type.js';
 import {IUserGenerator} from './user-generator.interface.js';
+import {DEFAULT_MOVIE_BACKGROUND_IMAGES, DEFAULT_MOVIE_POSTER_IMAGES} from '../../modules/movie/movie.constant.js';
 
-const MAX_MOVIE_ID = 2 ** 32 - 1;
 const MIN_DESCRIPTION_SENTENCES = 3;
 const MAX_DESCRIPTION_SENTENCES = 5;
 
@@ -31,7 +31,6 @@ export default class MovieGenerator implements IMovieGenerator {
   }
 
   public generate(): Movie {
-    const movieId = getRandomInt(1, MAX_MOVIE_ID);
     const postedByUser = this.userGenerator.generate();
 
     return {
@@ -43,14 +42,14 @@ export default class MovieGenerator implements IMovieGenerator {
       genre: getRandomElement<Genre>(genres),
       releaseYear: getRandomInt(EARLIEST_RELEASE_YEAR, new Date().getFullYear()),
       rating: getRandomInt(0, 100) / 10,
-      previewUri: `/previews/${movieId}`,
-      videoUri: `/videos/${movieId}`,
+      previewUri: '/previews/some-movie',
+      videoUri: '/videos/some-movie',
       cast: getRandomMovieCast(this.mockData.names, this.mockData.surnames, MAX_CAST_LENGTH),
       director: getRandomFullName(this.mockData.names, this.mockData.surnames),
       runningLengthMin: getRandomInt(1, MAX_RUNNING_LENGTH_MIN),
       postedByUser,
-      posterUri: `/posters/${movieId}`,
-      backgroundImageUri: `/backgroundImages/${movieId}`,
+      posterUri: getRandomElement(DEFAULT_MOVIE_POSTER_IMAGES),
+      backgroundImageUri: getRandomElement(DEFAULT_MOVIE_BACKGROUND_IMAGES),
       backgroundColor: getRandomHexColor()
     };
   }

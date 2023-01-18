@@ -11,7 +11,6 @@ export type ConfigSchema = {
   DB_PASSWORD: string;
   DB_PORT: number;
   DB_NAME: string;
-  DEFAULT_USER_PASSWORD: string;
   UPLOAD_DIRECTORY: string;
   JWT_SECRET: string;
   STATIC_DIRECTORY_PATH: string;
@@ -60,12 +59,6 @@ export const configSchema = convict<ConfigSchema>({
     format: String,
     env: 'DB_NAME',
     default: 'course-nodejs-restapi'
-  },
-  DEFAULT_USER_PASSWORD: {
-    doc: 'Default user password used for test data generation',
-    format: String,
-    env: 'DEFAULT_USER_PASSWORD',
-    default: '123456'
   },
   UPLOAD_DIRECTORY: {
     doc: 'Directory for uploading files',

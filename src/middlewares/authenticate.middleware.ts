@@ -8,13 +8,13 @@ export class AuthenticateMiddleware implements IMiddleware {
   constructor(private readonly jwtSecret: string) {}
 
   async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
-    const authorizationHeader = req.headers?.authorization?.split(' ');
+    const authorization = req.headers?.authorization;
     const xToken: string | undefined = req.headers?.['x-token']?.toString();
-    if (!authorizationHeader && !xToken) {
+    if (!authorization && !xToken) {
       return next();
     }
 
-    const token = authorizationHeader ? authorizationHeader[1] : (xToken ?? '');
+    const token = authorization ? authorization?.split(' ')[1] : (xToken ?? '');
 
     try {
       const {payload} = await jose.jwtVerify(token, new TextEncoder().encode(this.jwtSecret));
@@ -22,7 +22,7 @@ export class AuthenticateMiddleware implements IMiddleware {
       if (!payload.email || !payload.id) {
         return next(new HttpError(
           StatusCodes.BAD_REQUEST,
-          'Email and id is required',
+          'Email and id are required',
           'AuthenticateMiddleware')
         );
       }

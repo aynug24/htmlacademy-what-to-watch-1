@@ -11,6 +11,9 @@ export default class CommentResponse {
   @Expose({name: 'createdAt'})
   public postDate!: string;
 
+  @Expose()
+  public score!: number;
+
   @Expose({name: 'userId'})
   @Type(() => UserResponse)
   public user!: UserResponse;

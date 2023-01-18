@@ -13,6 +13,7 @@ export const Component = {
   ICommentService: Symbol.for('ICommentService'),
   MoviesToWatchModel: Symbol.for('MoviesToWatchModel'),
   IMoviesToWatchService: Symbol.for('IMoviesToWatchService'),
+  IMovieRatingService: Symbol.for('IMovieRatingService'),
   IExceptionFilter: Symbol.for('IExceptionFilter'),
   MovieController: Symbol.for('MovieController'),
   MoviesToWatchController: Symbol.for('MoviesToWatchController'),

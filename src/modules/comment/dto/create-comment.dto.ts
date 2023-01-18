@@ -5,9 +5,9 @@ export default class CreateCommentDto {
   @Length(5, 1024, {message: 'Text length should be 5-1024 characters'})
   public text!: string;
 
-  @IsInt({message: 'Rating should be an integer'})
-  @Min(1, {message: 'Min rating is 1'})
-  @Max(10, {message: 'Max rating is 10'})
+  @IsInt({message: 'Score should be an integer'})
+  @Min(1, {message: 'Min score is 1'})
+  @Max(10, {message: 'Max score is 10'})
   public score!: number;
 
   @IsMongoId({message: 'movieId should be a valid id'})

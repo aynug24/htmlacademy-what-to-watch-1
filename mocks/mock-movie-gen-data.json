@@ -1,5 +1,26 @@
 {
   "api": {
+    "emails": [
+      "snow@pisem.local",
+      "president@dka.local",
+      "fish@big.local",
+      "test@pisem.local",
+      "freedom@pisem.local"
+    ],
+    "posterPaths": [
+      "hunger_games_poster.jpg",
+      "gifted_poster.jpg",
+      "soul_poster.jpg",
+      "lion_king_poster.jpg",
+      "weathering_with_you_poster.jpg"
+    ],
+    "backgroundImagePaths": [
+      "hunger_games_bg.jpg",
+      "gifted_bg.jpg",
+      "soul_bg.jpg",
+      "lion_king_bg.jpg",
+      "weathering_with_you_bg.jpg"
+    ],
     "nouns": [
       "history",
       "way",

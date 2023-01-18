@@ -4,12 +4,12 @@ import {Controller} from '../../common/controller/controller.js';
 import {Component} from '../../types/component.types.js';
 import {ILogger} from '../../common/logger/logger.interface.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
-import {fillDTO} from '../../utils/common.js';
+import {fillDto} from '../../utils/common.js';
 import {IMoviesToWatchService} from './movies-to-watch.interface.js';
-import MovieSummaryResponse from '../movie/response/movie-summary.response.js';
 import {PrivateRouteMiddleware} from '../../middlewares/private-route.middleware.js';
 import {IUserService} from '../user/user-service.interface.js';
 import {IConfig} from '../../common/config/config.interface.js';
+import MovieResponse from '../movie/response/movie.response.js';
 
 @injectable()
 export default class MoviesToWatchController extends Controller {
@@ -49,7 +49,7 @@ export default class MoviesToWatchController extends Controller {
       throw new Error(`Couldn't find movies to watch for user ${user.id}`);
     }
 
-    this.ok(res, fillDTO(MovieSummaryResponse, moviesToWatch.movies));
+    this.ok(res, fillDto(MovieResponse, moviesToWatch.movies));
   }
 
   public async add({

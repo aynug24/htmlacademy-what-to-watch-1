@@ -17,7 +17,7 @@ export class CommentEntity extends defaultClasses.TimeStamps {
   public text!: string;
 
   @prop({required: true, min: 1, max: 10})
-  public rating!: number;
+  public score!: number;
 
   @prop({
     ref: MovieEntity,

@@ -7,7 +7,7 @@ import {HttpMethod} from '../../types/http-method.enum.js';
 import {IMovieService} from './movie-service.interface.js';
 import {StatusCodes} from 'http-status-codes';
 import MovieResponse from './response/movie.response.js';
-import {fillDTO} from '../../utils/common.js';
+import {fillDto} from '../../utils/common.js';
 import CreateMovieDto from './dto/create-movie.dto.js';
 import UpdateMovieDto from './dto/update-movie.dto.js';
 import MovieSummaryResponse from './response/movie-summary.response.js';
@@ -102,12 +102,11 @@ export default class MovieController extends Controller {
       backgroundImageUri
     }, user.id);
 
-    const movie = await this.movieService.findById(result.id);
-    this.created(res, fillDTO(MovieResponse, movie));
+    this.created(res, fillDto(MovieResponse, result));
   }
 
   public async update(
-    {body, params, user}: Request<StringRecord, AnyRecord, UpdateMovieDto>, // todo ну нехорошо route parameters пихать в Record<string, ...>
+    {body, params, user}: Request<StringRecord, AnyRecord, UpdateMovieDto>,
     res: Response): Promise<void> {
 
     const movieId = params.movieId;
@@ -120,7 +119,7 @@ export default class MovieController extends Controller {
       );
     }
     const result = await this.movieService.updateById(movieId, body);
-    this.ok(res, fillDTO(MovieResponse, result));
+    this.ok(res, fillDto(MovieResponse, result));
   }
 
   public async delete(
@@ -158,12 +157,12 @@ export default class MovieController extends Controller {
     } else {
       movies = await this.movieService.findNew(limit);
     }
-    this.ok(res, fillDTO(MovieSummaryResponse, movies));
+    this.ok(res, fillDto(MovieSummaryResponse, movies));
   }
 
   public async get({params}: Request<StringRecord>, res: Response): Promise<void> {
     const movieId = params.movieId;
     const movie = await this.movieService.findById(movieId);
-    this.ok(res, fillDTO(MovieResponse, movie));
+    this.ok(res, fillDto(MovieResponse, movie));
   }
 }
