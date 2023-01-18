@@ -1,5 +1,6 @@
 ###
 
+## Вход в закрытую часть приложения
 POST http://localhost:4200/users/login HTTP/1.1
 Accept: application/json
 Content-Type: application/json
@@ -152,56 +153,57 @@ Authorization: Bearer {{token}}
 # Пользователи
 ## Создание нового пользователя
 POST http://localhost:4200/users/register HTTP/1.1
-Content-Type: multipart/form-data; boundary=HereGoes
+Content-Type: multipart/form-data; boundary=RazDva
 
---HereGoes
+--RazDva
 Content-Disposition: form-data; name="email"
 Content-Type: text/plain
 
-philipp@mail.ru
---HereGoes
+sergei.lugovykh2@yandex.ru
+--RazDva
 Content-Disposition: form-data; name="name"
 Content-Type: text/plain
 
-Philipp
---HereGoes
+Sergei
+--RazDva
 Content-Disposition: form-data; name="password"
 Content-Type: text/plain
 
 123456
---HereGoes
-Content-Disposition: form-data; name="avatar"; filename="avatar.png"
+--RazDva
+Content-Disposition: form-data; name="profilePicture"; filename="avatar.png"
 Content-Type: image/png
 
-< /Users/demelissiana/Downloads/meoweb.png
---HereGoes--
+< ./static-directory/default-avatar.png
+--RazDva--
 
+> {% client.global.set("registeredUserId", response.body.id); %}
 ###
 
 ## Отправка аватарки пользователя
-POST http://localhost:4200/users/63c018135b7fc5c78ec58099/avatar HTTP/1.1
+POST http://localhost:4200/users/{{registeredUserId}}/profilePicture HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="avatar"; filename="avatar.png"
+Content-Disposition: form-data; name="profilePicture"; filename="avatar.png"
 Content-Type: image/png
 
-< /Users/demelissiana/Downloads/default-avatar.png
+< ./static-directory/avatar.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###
 
-## Вход в закрытую часть приложения
 POST http://localhost:4200/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "sun@mail.ru",
+  "email": "sergei.lugovykh2@yandex.ru",
   "password": "123456"
 }
 
+> {% client.global.set("registeredUserToken", response.body.token); %}
 ###
 
 ## Проверка токена пользователя
 GET http://localhost:4200/users/login HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1bkBtYWlsLnJ1IiwiaWQiOiI2M2MwMTgxMzViN2ZjNWM3OGVjNTgwOTkiLCJpYXQiOjE2NzM1NTE0MjUsImV4cCI6MTY3MzcyNDIyNX0.0pSV9wNbnw9t5_yrtGFQpWVqfZzkLrtM8vswN94EVcg
+Authorization: Bearer {{registeredUserToken}}
