@@ -1,13 +1,14 @@
-# 0. npm i && cd frontend && npm i && cd ..
-# 1. npm run mock:server
-# 2. npm run cli -- --generate 20 ./mocks/movies.tsv
-# 3. npm run cli -- --import ./mocks/movies.tsv
-# 4. npm run start
-# 5. cd frontend && npm run start
+## 1. cp .env.example .env && npm i && cd frontend && npm i && cd ..
+## 2. docker-compose up
+## 3. npm run mock:server
+## 4. npm run cli -- --generate 20 ./mocks/movies.tsv http://localhost:3123/api
+## 5. npm run cli -- --import ./mocks/movies.tsv
+## 6. npm run start
+## 7. cd frontend && npm run start
 
-# (Имеющийся) фронт должен работать
-# ./queries.http - полезный файлик :) (по крайней мере в вебшторме)
-# В репе может быть многовато папок с картинками, чтобы работало + не оч понял где какие должны быть)
+## (Имеющийся) фронт должен работать
+## ./queries.http - полезный файлик :) (по крайней мере в вебшторме)
+## В репе может быть многовато папок с картинками, чтобы работало + не оч понял где какие должны быть)
 
 # Личный проект «Что посмотреть»
 
