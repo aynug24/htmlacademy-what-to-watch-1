@@ -16,7 +16,8 @@ tags:
     description: Комментарии к фильмам
   - name: users
     description: Пользователь
-
+  - name: promo-movie
+    description: Промо-фильм
 paths:
   /movies:
     get:
@@ -80,7 +81,7 @@ paths:
       schema:
         type: string
       example: e5293rifh2
-    
+
     get:
       tags:
         - movies
@@ -124,7 +125,7 @@ paths:
           description: Фильм не найден
         "418":
           description: А я чайник
-    
+
     delete:
       tags:
         - movies
@@ -142,19 +143,10 @@ paths:
         "418":
           description: А я чайник
 
-  /movies/{movieId}/promo:
-    parameters:
-    - name: movieId
-      in: path
-      description: Id фильма
-      required: true
-      schema:
-        type: string
-      example: e5293rifh2
-    
+  /promo-movie:
     get:
       tags:
-        - movies
+        - promo-movie
       summary: Получение промо-фильма
       description: Сервис предоставляет ресурс для получения информации о промо-фильме.
       responses:
@@ -166,7 +158,7 @@ paths:
                 $ref: '#/components/schemas/movie'
         "404":
           description: Фильм не найден
-  
+
   /movies-to-watch:
     get:
       tags:
@@ -228,10 +220,10 @@ paths:
           description: Пользователь не авторизован
         "418":
           description: А я чайник
-  /movies/{movieId}/comments:
+  /comments:
     parameters:
     - name: movieId
-      in: path
+      in: query
       description: Id фильма
       required: true
       schema:
@@ -277,7 +269,7 @@ paths:
           description: Пользователь не авторизован
         "404":
           description: Фильм не найден
-  
+
   /users/register:
     post:
       tags:
@@ -300,8 +292,6 @@ paths:
                 $ref: '#/components/schemas/user'
         "400":
           description: Неверный запрос
-        "403":
-          description: Только неавторизованные пользователи могут регистрироваться
         "409":
           description: Пользователь с таким email уже существует.
 
@@ -320,11 +310,14 @@ paths:
       responses:
         "200":
           description: Успешный вход
-          headers: 
-            Set-Cookie:
+          content:
+            application/json:
               schema:
-                type: string
-                example: JSESSIONID=abcde12345; Path=/; HttpOnly
+                required:
+                  - token
+                properties:
+                  token:
+                    type: string
         "400":
           description: Неверный запрос
         "401":
@@ -344,18 +337,6 @@ paths:
                 $ref: '#/components/schemas/user'
         "401":
           description: Пользователь не авторизован
-  
-  /users/logout:
-    post:
-      tags:
-        - users
-      summary: Выход из закрытой части приложения
-      description: Если токен прошёл проверку, сервис завершает пользовательский сеанс (сессию). В противном случае возвращает ошибку и соответствующий код состояния.
-      responses:
-        "200":
-          description: Пользователь вышел из аккаунта
-        "404":
-          description: Пользователь не был авторизован
 
 components:
   schemas:
@@ -364,7 +345,7 @@ components:
       enum: [comedy, crime, documentary, drama, horror, family, romance, scifi, thriller]
       description: Жанр фильма
       example: drama
-    
+
     editMovie:
       type: object
       properties:
@@ -380,7 +361,7 @@ components:
           maxLength: 1024
           description: Описание фильма
           example: Umer v kontse k bolshomu nashemu sozhaleniyu
-        genre: 
+        genre:
           $ref: '#/components/schemas/genre'
         releaseYear:
           type: integer
@@ -453,7 +434,7 @@ components:
           maxLength: 1024
           description: Описание фильма
           example: Umer v kontse k bolshomu nashemu sozhaleniyu
-        genre: 
+        genre:
           $ref: '#/components/schemas/genre'
         releaseYear:
           type: integer
@@ -504,7 +485,7 @@ components:
           type: string
           description: Ссылка на сущность «Пользователь»
           example: 43gonwt0wenfiwnt
-    
+
     movie:
       type: object
       required:
@@ -538,7 +519,7 @@ components:
           maxLength: 1024
           description: Описание фильма
           example: Umer v kontse k bolshomu nashemu sozhaleniyu
-        genre: 
+        genre:
           $ref: '#/components/schemas/genre'
         releaseYear:
           type: integer
@@ -619,7 +600,7 @@ components:
           maxLength: 100
           description: Название фильма
           example: Drive
-        genre: 
+        genre:
           $ref: '#/components/schemas/genre'
         previewUri:
           type: string
@@ -672,7 +653,7 @@ components:
           type: string
           description: Автор комментария, ссылка на сущность «Пользователь»
           example: 39twfneogw
-      
+
     createUser:
       type: object
       required:
@@ -708,7 +689,7 @@ components:
         email:
           type: string
           format: email
-          description: Электронная почт
+          description: Электронная почта
         password:
           type: string
           format: password
@@ -734,5 +715,3 @@ components:
         profilePictureUri:
           type: string
           description: Аватар пользователя. Изображение пользователя в формате .jpg или .png
-  
-
