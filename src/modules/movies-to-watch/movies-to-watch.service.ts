@@ -13,14 +13,22 @@ export default class MoviesToWatchService implements IMoviesToWatchService {
 
   public async find(userId: string): Promise<DocumentType<MoviesToWatchEntity> | null> {
     return this.moviesToWatchModel
-      .findById(userId)
+      .findOneAndUpdate(
+        {user: userId},
+        {
+          $setOnInsert: {
+            user: userId,
+          }
+        },
+        {new: true, upsert: true}
+      )
       .populate('movies');
   }
 
   public async add(userId: string, movieId: string): Promise<DocumentType<MoviesToWatchEntity> | null> {
     return this.moviesToWatchModel
-      .findByIdAndUpdate(
-        userId,
+      .findOneAndUpdate(
+        {user: userId},
         {$addToSet: {movies: movieId}},
         {new: true, upsert: true}
       );
@@ -28,8 +36,8 @@ export default class MoviesToWatchService implements IMoviesToWatchService {
 
   public async delete(userId: string, movieId: string): Promise<DocumentType<MoviesToWatchEntity> | null> {
     return this.moviesToWatchModel
-      .findByIdAndUpdate(
-        userId,
+      .findOneAndUpdate(
+        {user: userId},
         {$pull: {movies: movieId}},
         {new: true}
       );
