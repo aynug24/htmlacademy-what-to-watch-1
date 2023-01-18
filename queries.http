@@ -70,6 +70,12 @@ Authorization: Bearer {{token}}
 
 ###
 
+## Получение детальной информации по фильму
+GET http://localhost:4200/movies/{{movieId}} HTTP/1.1
+Accept: application/json
+
+###
+
 ## Удаление карточки фильма
 DELETE http://localhost:4200/movies/{{movieId}} HTTP/1.1
 Authorization: Bearer {{token}}
@@ -84,12 +90,6 @@ Accept: application/json
 
 ## Получение списка фильмов определенного жанра
 GET http://localhost:4200/movies?genre=drama HTTP/1.1
-Accept: application/json
-
-###
-
-## Получение детальной информации по фильму
-GET http://localhost:4200/movies/{{movieId}} HTTP/1.1
 Accept: application/json
 
 ###
