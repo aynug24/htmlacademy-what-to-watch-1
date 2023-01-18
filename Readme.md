@@ -1,5 +1,12 @@
-# РЕКОМЕНДУЮ ПРОВЕРЯТЬ НЕЗАЩИЩЁННУЮ РЕПУ https://github.com/aynug24/htmlacademy-what-to-watch-1
-# ПОТОМУ ЧТО В ЭТУ НЕ ПОМЁРДЖИТЬ ПОСЛЕ ПОСЛЕДНЕЙ ДОМАХИ
+# 0. npm i && cd frontend && npm i && cd ..
+# 1. npm run mock:server
+# 2. npm run cli -- --generate 20 ./mocks/movies.tsv
+# 3. npm run cli -- --import ./mocks/movies.tsv
+# 4. npm run start
+# 5. cd frontend && npm run start
+
+# (Имеющийся) фронт должен работать
+# В репе может быть многовато папок с картинками, чтобы работало + не оч понял где какие должны быть)
 
 # Личный проект «Что посмотреть»
 
