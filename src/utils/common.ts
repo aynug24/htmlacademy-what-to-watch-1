@@ -57,11 +57,13 @@ export const transformProperty = (
 
 export const transformObject = (properties: string[], staticPath: string, uploadPath: string, data: Record<string, unknown>) => {
   properties.forEach((property) => transformProperty(property, data, (target: Record<string, unknown>) => {
-    const rootPath = [
+    const fileIsStatic = [
       ...DEFAULT_STATIC_IMAGES,
       ...DEFAULT_MOVIE_POSTER_IMAGES,
       ...DEFAULT_MOVIE_BACKGROUND_IMAGES
-    ].includes(`${target[property]}`) ? staticPath : uploadPath;
-    target[property] = `${rootPath}/${target[property]}`;
+    ].includes(`${target[property]}`);
+
+    const filePath = fileIsStatic ? staticPath : uploadPath;
+    target[property] = `${filePath}/${target[property]}`;
   }));
 };

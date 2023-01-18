@@ -29,7 +29,7 @@ export const DEFAULT_GENRE = 'All genres';
 export enum APIRoute {
   Films = '/movies',
   Similar = '/similar',
-  Promo = '/promo',
+  Promo = '/promo-movie',
   Favorite = '/movies-to-watch', // todo мб не надо
   Comments = '/comments',
   Login = '/users/login',

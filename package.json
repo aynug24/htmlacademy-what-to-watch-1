@@ -44,6 +44,9 @@
     "node": "^16.13.0",
     "npm": "^8.1.0"
   },
+  "ts-node": {
+    "esm": true
+  },
   "dependencies": {
     "@typegoose/typegoose": "^9.8.1",
     "class-transformer": "^0.5.1",

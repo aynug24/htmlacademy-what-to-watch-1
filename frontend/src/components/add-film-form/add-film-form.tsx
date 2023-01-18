@@ -95,7 +95,7 @@ function AddFilmForm<T extends Film | NewFilm>({
           </label>
           <input
             className="sign-in__input"
-            type="url"
+            type="text"
             placeholder="Poster image"
             name="posterImage"
             id="posterImage"
@@ -246,7 +246,7 @@ function AddFilmForm<T extends Film | NewFilm>({
           </label>
           <input
             className="sign-in__input"
-            type="url"
+            type="text"
             placeholder="Background image"
             name="backgroundImage"
             id="backgroundImage"
@@ -267,7 +267,7 @@ function AddFilmForm<T extends Film | NewFilm>({
           </label>
           <input
             className="sign-in__input"
-            type="url"
+            type="text"
             placeholder="Video"
             name="videoLink"
             id="videoLink"
@@ -288,7 +288,7 @@ function AddFilmForm<T extends Film | NewFilm>({
           </label>
           <input
             className="sign-in__input"
-            type="url"
+            type="text"
             placeholder="Preview video"
             name="previewVideoLink"
             id="previewVideoLink"

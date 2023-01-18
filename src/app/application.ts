@@ -11,6 +11,7 @@ import express, {Express} from 'express';
 import {IExceptionFilter} from '../common/errors/exception-filter.interface.js';
 import {AuthenticateMiddleware} from '../middlewares/authenticate.middleware.js';
 import {getFullServerPath} from '../utils/common.js';
+import {STATIC_URI, UPLOAD_URI} from './application.contants.js';
 
 @injectable()
 export default class Application {
@@ -40,8 +41,8 @@ export default class Application {
 
   public initMiddleware() {
     this.expressApp.use(express.json());
-    this.expressApp.use('/upload', express.static(`.${this.config.get('UPLOAD_DIRECTORY')}`));
-    this.expressApp.use('/static', express.static(`.${this.config.get('STATIC_DIRECTORY_PATH')}`));
+    this.expressApp.use(UPLOAD_URI, express.static(`.${this.config.get('UPLOAD_DIRECTORY')}`));
+    this.expressApp.use(STATIC_URI, express.static(`.${this.config.get('STATIC_DIRECTORY_PATH')}`));
 
     const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApp.use(authenticateMiddleware.execute.bind(authenticateMiddleware));

@@ -57,7 +57,7 @@ export default class CommentController extends Controller {
   }
 
   public async create(
-    {body, user}: Request<object, object, CreateCommentDto, { movieId?: string }>,
+    {body, user}: Request<object, object, CreateCommentDto>,
     res: Response
   ): Promise<void> {
     const comment = await this.commentService.create(body, user.id);

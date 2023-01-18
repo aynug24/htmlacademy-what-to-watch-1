@@ -36,7 +36,7 @@ export default class UserController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new UploadFileMiddleware('profilePictureUri', this.configService.get('UPLOAD_DIRECTORY')),
+        new UploadFileMiddleware('profilePicture', this.configService.get('UPLOAD_DIRECTORY')),
         new ValidateDtoMiddleware(CreateUserDto)]
     });
     this.addRoute({

@@ -7,7 +7,7 @@ import {IDocumentExists} from '../../types/document-exists.interface.js';
 
 export interface IMovieService extends IDocumentExists {
   create(dto: CreateMovieDto, userId: string): Promise<DocumentType<MovieEntity>>;
-  findById(offerId: string): Promise<DocumentType<MovieEntity> | null>;
+  findById(movieId: string): Promise<DocumentType<MovieEntity> | null>;
   updateById(movieId: string, dto: UpdateMovieDto): Promise<DocumentType<MovieEntity> | null>;
   deleteById(movieId: string): Promise<DocumentType<MovieEntity> | null>;
   findNew(count?: number): Promise<DocumentType<MovieEntity>[]>;

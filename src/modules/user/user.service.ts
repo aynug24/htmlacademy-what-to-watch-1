@@ -6,18 +6,23 @@ import {IUserService} from './user-service.interface.js';
 import {ILogger} from '../../common/logger/logger.interface.js';
 import {Component} from '../../types/component.types.js';
 import LoginUserDto from './dto/login-user.dto.js';
+import {DEFAULT_PROFILE_PICTURE_FILE_NAME} from './user.constant.js';
 
 @injectable()
 export default class UserService implements IUserService {
   constructor(
     @inject(Component.ILogger) private logger: ILogger,
     @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
-  ) {}
+  ) {
+  }
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const user = new UserEntity(dto);
     user.setPassword(dto.password, salt);
 
+    if (!user.profilePictureUri) {
+      user.profilePictureUri = DEFAULT_PROFILE_PICTURE_FILE_NAME;
+    }
     const result = await this.userModel.create(user);
     this.logger.info(`New user created: ${user.email}`);
 
@@ -29,10 +34,9 @@ export default class UserService implements IUserService {
   }
 
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const existedUser = await this.findByEmail(dto.email);
-
-    if (existedUser) {
-      return existedUser;
+    const existingUser = await this.findByEmail(dto.email);
+    if (existingUser) {
+      return existingUser;
     }
 
     return this.create(dto, salt);

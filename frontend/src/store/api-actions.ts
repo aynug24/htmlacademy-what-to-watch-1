@@ -243,8 +243,8 @@ export const fetchFavoriteFilms = createAsyncThunk<
   async (_arg, {dispatch, extra: api}) => {
     dispatch(setFavoriteFilmsIsLoading(true));
     try {
-      const {data} = await api.get<Film[]>(`${APIRoute.Favorite}`);
-      dispatch(setFavoriteFilms(data));
+      const {data} = await api.get<MovieResponse[]>(`${APIRoute.Favorite}`);
+      dispatch(setFavoriteFilms(data.map(film => adaptMovieToClient(film))));
     } catch (error) {
       toast.error('Can\'t fetch favorite films');
     } finally {
@@ -258,8 +258,8 @@ export const fetchPromo = createAsyncThunk<void, undefined, AsyncThunkConfig>(
   async (_arg, {dispatch, extra: api}) => {
     dispatch(setPromoFilmIsLoading(true));
     try {
-      const {data} = await api.get<Film>(`${APIRoute.Promo}`);
-      dispatch(setPromoFilm(data));
+      const {data} = await api.get<MovieResponse>(`${APIRoute.Promo}`);
+      dispatch(setPromoFilm(adaptMovieToClient(data)));
     } catch (error) {
       dispatch(setPromoFilm(null));
       toast.error('Can\'t fetch promo film');
